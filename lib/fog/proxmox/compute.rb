@@ -5,71 +5,79 @@ module Fog
   module Compute
     class Proxmox < Fog::Service
 
-      requires :proxmox_password
-      requires :proxmox_username
-      recognizes :host, :port, :api, :scheme, :realm
+      requires :proxmox_password, :proxmox_username
+      recognizes :persistent
+      recognizes :host
+      recognizes :port
+      recognizes :api
+      recognizes :scheme
+      recognizes :realm
+      
+      recognizes :proxmox_ticket, :proxmox_csrf, :proxmox_ticket_expiry
 
       model_path 'fog/proxmox/models/compute'
       # access
-      model       :realm
-      collection  :realms
-      model       :group
-      collection  :groups
-      model       :role
-      collection  :roles
-      model       :user
-      collection  :users
+#      model       :realm
+#     collection  :realms
+#      model       :group
+#      collection  :groups
+#      model       :role
+#      collection  :roles
+#     model       :user
+#      collection  :users
       # cluster
       model       :resource
       collection  :resources
-      model       :backup
-      collection  :backups
-      model       :hagroup
-      collection  :hagroups
+#      model       :backup
+#      collection  :backups
+#      model       :hagroup
+#      collection  :hagroups
       # nodes
       model       :openvz
       collection  :openvzs
-      model       :qemu
-      collection  :qemus
-      model       :service
-      collection  :services
-      model       :network
-      collection  :networks
-      model       :scan
-      collection  :scans
-      model       :task
-      collection  :tasks
+#      model       :qemu
+#      collection  :qemus
+      model       :server
+      collection  :servers
+#      model       :service
+#      collection  :services
+#      model       :network
+#      collection  :networks
+#      model       :scan
+#      collection  :scans
+#      model       :task
+#      collection  :tasks
       # storage
-      model       :store
-      collection  :stores
+#      model       :store
+#      collection  :stores
       # pools
-      model       :pool
-      collection  :pools
+#      model       :pool
+#      collection  :pools
       
       request_path 'fog/proxmox/requests/compute'
 
-      request     :access
-      request     :access_domains
-      request     :access_groups
-      request     :access_roles
-      request     :access_users
+#      request     :access
+#      request     :access_domains
+#      request     :access_groups
+#      request     :access_roles
+#      request     :access_users
       request     :cluster
-      request     :cluster_backup
-      request     :cluster_ha
-      request     :cluster_ha_groups
+#      request     :cluster_backup
+#      request     :cluster_ha
+#      request     :cluster_ha_groups
       request     :nodes
-      request     :nodes_network
+#      request     :nodes_network
       request     :nodes_openvz
       request     :nodes_openvz_status
-      request     :nodes_qemu
-      request     :nodes_qemu_snapshot
-      request     :nodes_scan
-      request     :nodes_services
-      request     :nodes_storage
-      request     :nodes_storage_content
-      request     :pools
-      request     :storage
-      request     :version
+#      request     :nodes_qemu
+#      request     :nodes_qemu_snapshot
+#      request     :nodes_scan
+#      request     :nodes_services
+#      request     :nodes_storage
+#      request     :nodes_storage_content
+#      request     :pools
+#      request     :storage
+#      request     :version
       
       class Mock
 
@@ -117,6 +125,7 @@ module Fog
         # * proxmox object with connection
          
         def initialize(options={})
+          @proxmox_ticket_expiry = Time::now
           @proxmox_password   = options[:proxmox_password]
           @proxmox_username   = options[:proxmox_username]
           @connection_options = options[:connection_options] || {}
@@ -139,24 +148,23 @@ module Fog
 
         def request(command, params)
           headers = {}
+          method = 'GET'
           params.reject!{|k,v| v.nil?}
 
           if has_session?
-            params = auth_session(params)
+            headers = auth_session(headers)
           elsif has_credentials?
-            params = auth_credentials(params)
+            headers = auth_credentials(headers)
           end
 
-          method = params[:method]
-          params.delete(:method)
-          case method
-            when 'GET', 'HEAD'
-            when 'POST', 'PUT', 'DELETE'
-              headers['CSRFPreventionToken'] = @proxmox_crsf
+          if params.key?(:method)
+            method = params[:method]
+            params.delete(:method)
           end
+          headers['CSRFPreventionToken'] = @proxmox_crsf if %w(POST PUT DELETE).include? method
 
-          response = issue_request(command, params, headers)
-          response = Fog::JSON.decode(response.body) unless response.body.empty?
+          response = issue_request(command, params, headers, method)
+          response = Fog::JSON.decode(response.body)['data'] unless response.body.empty?
           response
         end
 
@@ -171,22 +179,24 @@ module Fog
           @proxmox_username && @proxmox_password
         end
         
-        def auth_session(params)
+        def auth_session(headers)
           # Set the ticket for the request
-          params.merge!( 'ticket' => @proxmox_ticket )
+          headers.merge!( 'Cookie' => "PVEAuthCookie=" + @proxmox_ticket )
           
-          return params
+          return headers
         end
         
-        def auth_credentials(params)
+        def auth_credentials(headers)
           # Will get a new ticket, if an old ticket exists, we use that as password for renewal
           response = issue_request(
-            command => 'access/ticket',
-            params => {
+            'access/ticket',
+            {
               'username' => @proxmox_username,
               'password' => @proxmox_ticket || @proxmox_password,
               'realm'    => @realm
-            }
+            },
+            {},
+            'POST'
           )
 
           # Decode the login response
@@ -197,15 +207,15 @@ module Fog
           @proxmox_username = response['username']
           @proxmox_ticket_expiry = Time::now + (120 * 60)
 
-          params.merge!( 'ticket' => @proxmox_ticket )
+          headers.merge!( 'Cookie' => "PVEAuthCookie=" + @proxmox_ticket )
 
-          return params
+          return headers
         end
 
         def issue_request(command, params={},headers={},method='GET',expects=200)
           begin
             @connection.request({
-              :path => command,
+              :path => "#{@api}/#{command}",
               :query => params,
               :headers => headers,
               :method => method,
@@ -222,14 +232,14 @@ module Fog
               when 401
                 raise Fog::Compute::Cloudstack::Unauthorized, "(#{error_code})".error_text
               when 431
-                raise Fog::Compute::Cloudstack::BadRequest, "(#{error_code})"error_text
+                raise Fog::Compute::Cloudstack::BadRequest, "(#{error_code})".error_text
               else
-                raise Fog::Compute::Cloudstack::Error, "(#{error_code})"error_text
+                raise Fog::Compute::Cloudstack::Error, "(#{error_code})".error_text
             end
           end
 
         end
-
+        
       end # Real
 
     end

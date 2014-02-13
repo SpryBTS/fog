@@ -4,11 +4,10 @@ module Fog
   module Compute
     class Proxmox
 
-      class Server < Fog::Compute::Server
+      class Openvz < Fog::Compute::Server
 
         identity  :ctid
 
-        attribute :node
         attribute :ostemplate
         attribute :vmid
         

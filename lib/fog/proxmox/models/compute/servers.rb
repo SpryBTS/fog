@@ -9,22 +9,17 @@ module Fog
 
         model Fog::Compute::Proxmox::Server
 
-        def all(filters = {})
+        def all(filters = { 'type' => ['qemu', 'openvz'] })
           load service.cluster('resources', filters)
         end
 
-        def get(node = nil, type = nil, id)
-          filters={}
-          filters[:node] => node if !node.nil?
-          filters[:type] => type if !type.nil?
+        def get(id)
           
-          service.cluster('resources', filters )
-
-          if server = service.nodes_openvz(node, id)
+          if server = service.cluster('resources', { 'id' => id, 'type' => ['qemu', 'openvz'] })
             new server
           end
         rescue Fog::Errors::NotFound
-          nil
+            nil
         end
       
       end
