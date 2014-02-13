@@ -3,7 +3,7 @@ module Fog
     class Proxmox
       class Real
 
-        def nodes(options = {})
+        def nodes(command, filters = {}, options = {})
           options[:method] = 'GET'
           request( "nodes#{'/'.options[:node] if options.key?[:node]}", options )
         end
@@ -12,7 +12,7 @@ module Fog
 
       class Mock
 
-        def nodes(options = {})
+        def nodes(command, filters = {}, options = {})
           self.data[:nodes] << ['localhost'] 
         end
 

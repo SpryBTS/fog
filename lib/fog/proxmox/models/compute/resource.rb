@@ -9,6 +9,7 @@ module Fog
         identity  :id
         attribute :type
         attribute :node
+        attribute :status
 
       end
 

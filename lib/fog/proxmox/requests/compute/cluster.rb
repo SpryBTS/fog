@@ -21,8 +21,8 @@ module Fog
                 end
               }
               if ( match && command == 'resources' )
-                # Reformat the 'id' value
-                r['id'].gsub!(/\/?#{r['type']}\//,'')
+                # Reformat the returned 'id' value
+                r['id'].gsub!(/^\/?#{r['type']}\//,'')
               end
               match
             }

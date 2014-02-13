@@ -6,7 +6,7 @@ module Fog
 
       class Openvz < Fog::Compute::Server
 
-        identity  :ctid
+        identity  :id
 
         attribute :ostemplate
         attribute :vmid
@@ -30,8 +30,15 @@ module Fog
         attribute :storage
         attribute :swap
 
+        attribute :status
+        attribute :node
+        attribute :template
+        attribute :name
+        attribute :maxcpu
+        attribute :type
+
         def save
-          requires :ctid
+          requires :id
           requires :node
           requires :ostemplate
           raise Fog::Errors::Error.new('Resaving an existing object may create a duplicate') if persisted?
