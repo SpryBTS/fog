@@ -3,17 +3,17 @@ module Fog
     class Proxmox
       class Real
 
-        def nodes(node = nil, options = {})
+        def pools(pool = nil, options = {})
           options[:method] ||= 'GET'
-          request("nodes" + "#{"/" + node unless node.nil?}", options)
+          request("pools" + "#{"/" + pool unless pool.nil?}", options)
         end
 
       end
 
       class Mock
 
-        def nodes
-          self.data[:nodes]
+        def pools
+          self.data[:pools]
         end
 
       end
