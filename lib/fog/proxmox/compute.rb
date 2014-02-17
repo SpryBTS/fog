@@ -17,26 +17,28 @@ module Fog
 
       model_path 'fog/proxmox/models/compute'
       # access
-#      model       :realm
-#     collection  :realms
-#      model       :group
-#      collection  :groups
-#      model       :role
-#      collection  :roles
-#     model       :user
-#      collection  :users
+      model       :acl
+      collection  :acls
+      model       :realm
+      collection  :realms
+      model       :group
+      collection  :groups
+      model       :role
+      collection  :roles
+      model       :user
+      collection  :users
       # cluster
       model       :resource
       collection  :resources
-#      model       :backup
-#      collection  :backups
-#      model       :hagroup
-#      collection  :hagroups
+      model       :backup
+      collection  :backups
+      model       :hagroup
+      collection  :hagroups
       # nodes
       model       :openvz
       collection  :openvzs
-#      model       :qemu
-#      collection  :qemus
+      model       :qemu
+      collection  :qemus
       model       :server
       collection  :servers
 #      model       :service
@@ -48,15 +50,15 @@ module Fog
 #      model       :task
 #      collection  :tasks
       # storage
-#      model       :store
-#      collection  :stores
+      model       :store
+      collection  :stores
       # pools
-#      model       :pool
-#      collection  :pools
+      model       :pool
+      collection  :pools
       
       request_path 'fog/proxmox/requests/compute'
 
-#      request     :access
+      request     :access
 #      request     :access_domains
 #      request     :access_groups
 #      request     :access_roles
@@ -67,16 +69,16 @@ module Fog
 #      request     :cluster_ha_groups
       request     :nodes
 #      request     :nodes_network
-      request     :nodes_openvz
-      request     :nodes_openvz_status
+#      request     :nodes_openvz
+#      request     :nodes_openvz_status
 #      request     :nodes_qemu
 #      request     :nodes_qemu_snapshot
 #      request     :nodes_scan
 #      request     :nodes_services
 #      request     :nodes_storage
 #      request     :nodes_storage_content
-#      request     :pools
-#      request     :storage
+      request     :pools
+      request     :storage
 #      request     :version
       
       class Mock
@@ -224,6 +226,7 @@ module Fog
 
           rescue Excon::Errors::HTTPStatusError => error
             error_response = Fog::JSON.decode(error.response.body)
+            puts error_response.inspect
 
             error_code = error_response.values.first['errorcode']
             error_text = error_response.values.first['errortext']

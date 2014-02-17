@@ -4,12 +4,12 @@ module Fog
   module Compute
     class Proxmox
 
-      class Resource < Fog::Model
+      class Pool < Fog::Model
 
-        identity  :id
+        identity  :poolid
         
-        attribute :node
-        attribute :status
+        attribute :comment
+        attribute :members
         attribute :type
 
       end

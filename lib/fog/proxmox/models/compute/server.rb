@@ -8,10 +8,6 @@ module Fog
 
         identity  :ctid
 
-        attribute :node
-        attribute :ostemplate
-        attribute :vmid
-        
         attribute :cpus
         attribute :cpuunits
         attribute :description
@@ -21,7 +17,9 @@ module Fog
         attribute :memory
         attribute :nameserver
         attribute :netif
+        attribute :node
         attribute :onboot
+        attribute :ostemplate
         attribute :password
         attribute :pool
         attribute :quotatime
@@ -30,6 +28,7 @@ module Fog
         attribute :searchdomain
         attribute :storage
         attribute :swap
+        attribute :vmid
 
         def save
           requires :ctid

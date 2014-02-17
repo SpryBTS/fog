@@ -4,7 +4,7 @@ module Fog
   module Compute
     class Proxmox
 
-      class Openvz < Fog::Compute::Server
+      class Qemu < Fog::Compute::Server
 
         identity  :id
 

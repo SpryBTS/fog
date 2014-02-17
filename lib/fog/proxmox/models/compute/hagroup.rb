@@ -4,13 +4,13 @@ module Fog
   module Compute
     class Proxmox
 
-      class Resource < Fog::Model
+      class Hagroup < Fog::Model
 
         identity  :id
-        
-        attribute :node
-        attribute :status
-        attribute :type
+
+        attribute :autostart
+        attribute :text
+        attribute :vmid
 
       end
 
