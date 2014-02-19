@@ -9,13 +9,12 @@ module Fog
 
         model Fog::Compute::Proxmox::Role
 
-        def all
-          load service.access( 'roles' )
+        def all( filters = {} )
+          load( service.access_request( { :command => 'roles', :filters => filters } ) )
         end
 
         def get(roleid)
-          
-          pool = service.access( 'roles', { 'roleid' => roleid } )
+          self.all( :roleid => roleid ).first
         rescue Fog::Errors::NotFound
           nil
         end

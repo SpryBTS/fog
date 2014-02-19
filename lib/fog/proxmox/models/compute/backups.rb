@@ -9,13 +9,13 @@ module Fog
 
         model Fog::Compute::Proxmox::Backup
 
-        def all
-          load service.cluster( 'backup' )
+        def all( filters = {} )
+          load( service.cluster_request( { :command => 'backup', :filters => filters } ) )
         end
 
         def get(id)
-          
-          pool = service.cluster( 'backup', { 'id' => id } )
+          backup = service.access_request( :command => "backup#{'/' + id unless id.nil?}" )
+          new backup.first if backup
         rescue Fog::Errors::NotFound
           nil
         end

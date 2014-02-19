@@ -9,13 +9,13 @@ module Fog
 
         model Fog::Compute::Proxmox::User
 
-        def all
-          load service.access( 'users' )
+        def all( filters = {} )
+          load( service.access_request( { :command => 'users', :filters => filters } ) )
         end
 
         def get(userid)
           
-          pool = service.access( 'users', { 'userid' => userid } )
+          self.all( :userid => userid ).first
         rescue Fog::Errors::NotFound
           nil
         end

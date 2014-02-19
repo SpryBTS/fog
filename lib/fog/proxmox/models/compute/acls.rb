@@ -9,13 +9,12 @@ module Fog
 
         model Fog::Compute::Proxmox::Acl
 
-        def all
-          load service.access( 'acl' )
+        def all( filters = {} )
+          load( service.access_request( { :command => 'acl', :filters => filters } ) )
         end
 
         def get(ugid)
-          
-          pool = service.access( 'acl', { 'ugid' => ugid } )
+          self.all( :ugid => ugid ).first
         rescue Fog::Errors::NotFound
           nil
         end

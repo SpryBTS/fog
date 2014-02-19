@@ -10,12 +10,11 @@ module Fog
         model Fog::Compute::Proxmox::Resource
 
         def all( filters = {} )
-          load service.cluster( 'resources', filters )
+          load( service.cluster_request( { :command => 'resources', :filters => filters } ) )
         end
 
         def get( id )
-          
-          resource = service.cluster( 'resources', { :id => id } )
+          self.all( :id => id ).first
         rescue Fog::Errors::NotFound
             nil
         end

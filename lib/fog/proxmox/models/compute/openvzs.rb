@@ -9,13 +9,13 @@ module Fog
 
         model Fog::Compute::Proxmox::Openvz
 
-        def all(filters = { 'type' => 'openvz' } )
-          load service.cluster( 'resources', filters )
+        def all( filters = { } )
+          filters[:type] = 'openvz'
+          load( service.cluster_request( { :command => 'resources', :filters => filters } ) )
         end
 
         def get(id)
-          
-          openvz = service.cluster( 'resources', { :id => "openvz/#{id}" } )
+          self.all( :id => "openvz/#{id}" ).first
         rescue Fog::Errors::NotFound
           nil
         end

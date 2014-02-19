@@ -35,20 +35,22 @@ module Fog
       model       :hagroup
       collection  :hagroups
       # nodes
+      model       :node
+      collection  :nodes
       model       :openvz
       collection  :openvzs
       model       :qemu
       collection  :qemus
       model       :server
       collection  :servers
+      model       :log
+      collection  :logs
 #      model       :service
 #      collection  :services
-#      model       :network
-#      collection  :networks
 #      model       :scan
 #      collection  :scans
-#      model       :task
-#      collection  :tasks
+      model       :task
+      collection  :tasks
       # storage
       model       :store
       collection  :stores
@@ -59,27 +61,10 @@ module Fog
       request_path 'fog/proxmox/requests/compute'
 
       request     :access
-#      request     :access_domains
-#      request     :access_groups
-#      request     :access_roles
-#      request     :access_users
       request     :cluster
-#      request     :cluster_backup
-#      request     :cluster_ha
-#      request     :cluster_ha_groups
       request     :nodes
-#      request     :nodes_network
-#      request     :nodes_openvz
-#      request     :nodes_openvz_status
-#      request     :nodes_qemu
-#      request     :nodes_qemu_snapshot
-#      request     :nodes_scan
-#      request     :nodes_services
-#      request     :nodes_storage
-#      request     :nodes_storage_content
       request     :pools
       request     :storage
-#      request     :version
       
       class Mock
 
@@ -150,26 +135,41 @@ module Fog
 
         def request(command, params)
           headers = {}
-          method = 'GET'
-          params.reject!{|k,v| v.nil?}
-
+          filters = params[:filters] if params.key?(:filters)
+          method = params[:method] if params.key?(:method)
+          method ||= :get
+          params.reject!{|k,v| ( v.nil? or k == :filters or k == :method) }
+          
           if has_session?
             headers = auth_session(headers)
           elsif has_credentials?
             headers = auth_credentials(headers)
           end
 
-          if params.key?(:method)
-            method = params[:method]
-            params.delete(:method)
-          end
           headers['CSRFPreventionToken'] = @proxmox_crsf if %w(POST PUT DELETE).include? method
 
           response = issue_request(command, params, headers, method)
           response = Fog::JSON.decode(response.body)['data'] unless response.body.empty?
+
+          # Filter response items
+          response.select! { |r|
+            match = false
+            filters.each_pair{ |k,v|
+              if r.key? k.to_s
+                if v.is_a? Array
+                  match = ( v.include? r[k.to_s] )
+                else
+                  match = ( r[k.to_s] == v )
+                end
+                break if match
+              end
+            }
+            match
+          } unless ( filters.nil? or filters.empty? )
+
           response
         end
-
+        
         private
 
         def has_session?

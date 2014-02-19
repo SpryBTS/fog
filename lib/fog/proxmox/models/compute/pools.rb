@@ -9,13 +9,13 @@ module Fog
 
         model Fog::Compute::Proxmox::Pool
 
-        def all
-          load service.pools
+        def all( filters = {} )
+          load( service.pools_request( :filters => filters ) )
         end
 
         def get(poolid)
-          
-          pool = service.pools( poolid )
+          pool = service.pools_request( :command => "pools#{'/' + poolid unless poolid.nil?}" )
+          new pool.first if pool
         rescue Fog::Errors::NotFound
           nil
         end

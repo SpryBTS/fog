@@ -9,13 +9,12 @@ module Fog
 
         model Fog::Compute::Proxmox::Node
 
-        def all
-          load service.nodes
+        def all( filters = {} )
+          load( service.nodes_request( :filters => filters ) )
         end
 
         def get(node)
-          
-          pool = service.nodes( node )
+          self.all( :id => "#{'node/' + node unless node.nil?}" ).first
         rescue Fog::Errors::NotFound
           nil
         end

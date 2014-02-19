@@ -7,9 +7,17 @@ module Fog
       class Node < Fog::Model
 
         identity  :id
+
         attribute :type
         attribute :node
-        attribute :status
+        attribute :maxdisk
+        attribute :disk
+        attribute :cpu
+        attribute :level
+        attribuge :maxcpu
+        attribute :mem
+        attribute :uptime
+        attribute :maxmem
 
       end
 

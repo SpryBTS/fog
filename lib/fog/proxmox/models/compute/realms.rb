@@ -9,13 +9,13 @@ module Fog
 
         model Fog::Compute::Proxmox::Realm
 
-        def all
-          load service.access( 'domains' )
+        def all( filters = {} )
+          load( service.access_request( { :command => 'domains', :filters => filters } ) )
         end
 
         def get(realm)
-          
-          pool = service.access( 'domains', { 'realm' => realm } )
+          realm = service.access_request( :command => "domains#{'/' + realm unless realm.nil?}" )
+          new realm.first if realm
         rescue Fog::Errors::NotFound
           nil
         end

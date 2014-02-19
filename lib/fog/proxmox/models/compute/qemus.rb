@@ -9,13 +9,13 @@ module Fog
 
         model Fog::Compute::Proxmox::Qemu
 
-        def all(filters = { 'type' => 'qemu' } )
-          load service.cluster( 'resources', filters )
+        def all( filters = { } )
+          filters[:type] = 'qemu'
+          load( service.cluster_request( { :command => 'resources', :filters => filters } ) )
         end
 
         def get(id)
-          
-          openvz = service.cluster( 'resources', { :id => "qemu/#{id}" } )
+          self.all( :id => "qemu/#{id}" ).first
         rescue Fog::Errors::NotFound
           nil
         end
