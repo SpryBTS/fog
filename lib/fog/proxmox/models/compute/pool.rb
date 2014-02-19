@@ -10,7 +10,6 @@ module Fog
         
         attribute :comment
         attribute :members
-        attribute :type
 
       end
 

@@ -11,20 +11,29 @@ module Fog
         attribute :ostemplate
         attribute :vmid
         
+        attribute :cpu
         attribute :cpus
         attribute :cpuunits
         attribute :description
         attribute :disk
+        attribute :diskread
+        attribute :diskwrite
         attribute :hostname
         attribute :ip_address
         attribute :maxcpu
+        attribute :maxdisk
+        attribute :maxmam
+        attribute :mem
         attribute :memory
         attribute :name
         attribute :nameserver
         attribute :netif
+        attribute :netin
+        attribute :netout
         attribute :node
         attribute :onboot
         attribute :password
+        attribute :pid
         attribute :pool
         attribute :quotatime
         attribute :quotaugidlimit
@@ -35,6 +44,7 @@ module Fog
         attribute :swap
         attribute :template
         attribute :type
+        attribute :uptime
 
         def save
           requires :id

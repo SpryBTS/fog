@@ -9,13 +9,13 @@ module Fog
 
         model Fog::Compute::Proxmox::Group
 
-        def all
-          load service.access( 'groups' )
+        def all( filters = {} )
+          load( service.access_request( { :command => 'groups', :filters => filters } ) )
         end
 
         def get(groupid)
-          
-          pool = service.access( 'groups', { 'groupid' => groupid } )
+          group = service.access_request( :command => "groups#{'/' + groupid unless groupid.nil?}" )
+          new group.first if group
         rescue Fog::Errors::NotFound
           nil
         end
