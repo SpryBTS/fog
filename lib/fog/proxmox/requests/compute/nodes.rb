@@ -8,10 +8,17 @@ module Fog
           options.reject!{|k,v| ( v.nil? or k == :command) }
           options[:method] ||= 'GET'
           
-          request("nodes#{'/' + command unless command.nil?}", options ).map!{ |r|
+          response = request("nodes#{'/' + command unless command.nil?}", options )
+
+          response = [response] if response.is_a? Hash
+
+          response.map!{ |r|
             r['id'].gsub!(/^\/?#{r['type']}\//,'') if ( r.key?('id') and r.key?('type') )
             r
           }
+
+          response
+
         end
 
       end

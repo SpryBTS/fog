@@ -13,28 +13,43 @@ module Fog
         attribute :roleid
         attribute :type
 
+        attr_accessor :groups, :users
+        
         def save
-          self.action( false )
+          requires :path
+          requires :roleid
+
+          data = {
+            'path'      => self.path,
+            'propagate' => self.propagate,
+            'roles'     => self.roleid,
+          }
+          
+          data['groups'] = self.groups unless self.groups.nil?
+          data['users'] = self.users unless self.users.nil?
+
+          result = service.create_acl data
+            
         end
 
         def destroy
-          self.action( true )
+          requires :path
+          requires :roleid
+
+          data = {
+            'path'      => self.path,
+            'propagate' => self.propagate,
+            'roles'     => self.roleid,
+          }
+
+          data['propagate'] = self.propagate unless self.propagate.nil?
+          data['groups'] = self.groups unless self.groups.nil?
+          data['users'] = self.users unless self.users.nil?
+
+          result = service.delete_acl data
+
         end
         
-        def action( delete = false )
-          requires :path, :roleid
-          data = {
-            'delete'    => delete,
-            'path'      => attributes[:path],
-            'propogate' => attributes[:propagate],
-            attributes[:type] => attributes[:roleid]
-          }
-          result = service.access_post(
-            :command => 'acl',
-            :body => Fog::JSON.encode(data)
-          )
-        end
-
       end
 
     end

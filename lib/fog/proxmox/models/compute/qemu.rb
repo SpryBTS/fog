@@ -11,40 +11,72 @@ module Fog
         attribute :ostemplate
         attribute :vmid
         
-        attribute :cpu
-        attribute :cpus
+        #config
+        attribute :nets
+        attribute :ides
+        attribute :satas
+        attribute :scsis
+        attribute :serials
+        attribute :unuseds
+        attribute :usbs
+        attribute :virtios
+        
+        attribute :parallels
+        
+        attribute :name
+        attribute :bootdisk
+        attribute :cores
+        attribute :ostype
+        attribute :memory
+        attribute :sockets
+        
+        # The following attributes are only needed when creating a new vm
+        attr_accessor :iso_dir, :iso_file
+        attr_accessor :network_interface_type ,:network_nat_network, :network_bridge_name
+        attr_accessor :volume_format_type, :volume_allocation,:volume_capacity, :volume_name, :volume_pool_name, :volume_template_name, :volume_path
+        attr_accessor :password
+        
+        #config
         attribute :cpuunits
         attribute :description
-        attribute :disk
-        attribute :diskread
-        attribute :diskwrite
         attribute :hostname
         attribute :ip_address
         attribute :maxcpu
-        attribute :maxdisk
-        attribute :maxmam
-        attribute :mem
         attribute :memory
         attribute :name
         attribute :nameserver
-        attribute :netif
-        attribute :netin
-        attribute :netout
+        attribute :nets
+        attribute :ides
         attribute :node
         attribute :onboot
         attribute :password
-        attribute :pid
         attribute :pool
         attribute :quotatime
         attribute :quotaugidlimit
         attribute :restore
         attribute :searchdomain
-        attribute :status
         attribute :storage
         attribute :swap
-        attribute :template
         attribute :type
+
+        #status
+        attribute :cpu
+        attribute :cpus
+        attribute :disk
+        attribute :diskread
+        attribute :diskwrite
+        attribute :ha
+        attribute :maxdisk
+        attribute :maxmem
+        attribute :mem
+        attribute :netin
+        attribute :netout
+        attribute :pid
+        attribute :qmpstatus
+        attribute :status
+        attribute :template
         attribute :uptime
+
 
         def save
           requires :id

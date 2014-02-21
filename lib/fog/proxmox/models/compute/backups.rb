@@ -14,7 +14,7 @@ module Fog
         end
 
         def get(id)
-          backup = service.access_request( :command => "backup#{'/' + id unless id.nil?}" )
+          backup = service.cluster_request( :command => "backup#{'/' + id unless id.nil?}" )
           new backup.first if backup
         rescue Fog::Errors::NotFound
           nil

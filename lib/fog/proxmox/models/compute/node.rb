@@ -14,7 +14,7 @@ module Fog
         attribute :disk
         attribute :cpu
         attribute :level
-        attribuge :maxcpu
+        attribute :maxcpu
         attribute :mem
         attribute :uptime
         attribute :maxmem

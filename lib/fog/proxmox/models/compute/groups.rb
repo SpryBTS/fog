@@ -14,8 +14,10 @@ module Fog
         end
 
         def get(groupid)
-          group = service.access_request( :command => "groups#{'/' + groupid unless groupid.nil?}" )
-          new group.first if group
+          if group = service.access_request( :command => "groups#{'/' + groupid unless groupid.nil?}" )
+            group['groupid'] = groupid
+            new group
+          end
         rescue Fog::Errors::NotFound
           nil
         end

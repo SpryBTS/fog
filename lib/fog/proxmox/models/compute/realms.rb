@@ -14,8 +14,10 @@ module Fog
         end
 
         def get(realm)
-          realm = service.access_request( :command => "domains#{'/' + realm unless realm.nil?}" )
-          new realm.first if realm
+          if realm = service.access_request( :command => "domains#{'/' + realm unless realm.nil?}" )
+            realm['realm'] = realm
+            new realm
+          end
         rescue Fog::Errors::NotFound
           nil
         end

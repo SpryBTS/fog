@@ -11,7 +11,15 @@ module Fog
 
         def all( filters = { } )
           filters[:type] = 'openvz'
-          load( service.cluster_request( { :command => 'resources', :filters => filters } ) )
+          load(
+            service.cluster_request( {
+              :command => 'resources',
+              :filters => filters
+            } ).map!{ |r|
+              r['id'].gsub!(/^\/?#{r['type']}\//,'')
+              r
+            }
+          )
         end
 
         def get(id)

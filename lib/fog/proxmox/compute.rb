@@ -5,6 +5,11 @@ module Fog
   module Compute
     class Proxmox < Fog::Service
 
+      class BadRequest     < Fog::Errors::Error; end
+      class Unauthorized   < Fog::Errors::Error; end
+      class ItemNotFound   < Fog::Errors::Error; end
+      class NotImplemented < Fog::Errors::Error; end
+      
       requires :proxmox_password, :proxmox_username
       recognizes :persistent
       recognizes :host
@@ -60,12 +65,44 @@ module Fog
       
       request_path 'fog/proxmox/requests/compute'
 
-      request     :access
-      request     :cluster
-      request     :nodes
-      request     :pools
-      request     :storage
-      
+      request :create_acl
+#      request :create_backup
+#      request :create_group
+#      request :create_pool
+#      request :create_realm
+#      request :create_role
+#      request :create_server
+#      request :create_store
+#      request :create_users
+      request :delete_acl
+#      request :delete_backup
+#      request :delete_group
+#      request :delete_pool
+#      request :delete_realm
+#      request :delete_role
+#      request :delete_server
+#      request :delete_store
+#      request :delete_user
+#      request :destroy_server
+      request :list_acls
+#      request :list_backups
+#      request :list_groups
+#      request :list_logs
+#      request :list_nodes
+#      request :list_openvzs
+#      request :list_pools
+#      request :list_qemus
+#      request :list_realms
+#      request :list_resources
+#      request :list_roles
+#      request :list_servers
+#      request :list_stores
+#      request :list_tasks
+#      request :list_users
+#      request :migrate_server
+#      request :start_server
+#      request :stop_server
+
       class Mock
 
         def self.data
@@ -133,27 +170,40 @@ module Fog
           @connection.reset
         end
 
-        def request(command, params)
-          headers = {}
-          filters = params[:filters] if params.key?(:filters)
-          method = params[:method] if params.key?(:method)
-          method ||= :get
-          params.reject!{|k,v| ( v.nil? or k == :filters or k == :method) }
+        def request(options)
+          command = options[:command] if options.key?(:command)
+          filters = options[:filters] if options.key?(:filters)
+          method  = options[:method]  if options.key?(:method)
+          headers = options[:headers] if options.key?(:headers)
+
+          # Some almost sensible defaults
+          command ||= nil
+          filters ||= {}
+          method  ||= :get
+          headers ||= {}
+          options.reject!{|k,v| ( v.nil? or [:command, :filters, :method, :headers].include? k ) }
+
+          puts "DEBUG: command :- #{command.inspect}"
+          puts "DEBUG: filters :- #{filters.inspect}"
+          puts "DEBUG: method :- #{method.inspect}"
+          puts "DEBUG: headers :- #{headers.inspect}"
+          puts "DEBUG: options :- #{options.inspect}"
           
+          # Session management
           if has_session?
             headers = auth_session(headers)
           elsif has_credentials?
             headers = auth_credentials(headers)
           end
 
-          headers['CSRFPreventionToken'] = @proxmox_crsf if %w(POST PUT DELETE).include? method
+          headers['CSRFPreventionToken'] = @proxmox_csrf if [:post, :put, :delete].include? method
 
-          response = issue_request(command, params, headers, method)
+          response = issue_request(command, options, headers, method)
           response = Fog::JSON.decode(response.body)['data'] unless response.body.empty?
 
           # Filter response items
           response.select! { |r|
-            match = false
+            match = true
             filters.each_pair{ |k,v|
               if r.key? k.to_s
                 if v.is_a? Array
@@ -161,7 +211,7 @@ module Fog
                 else
                   match = ( r[k.to_s] == v )
                 end
-                break if match
+                break unless match
               end
             }
             match
@@ -189,12 +239,12 @@ module Fog
         end
         
         def auth_credentials(headers)
-          # Will get a new ticket, if an old ticket exists, we use that as password for renewal
+          # Will get a new ticket
           response = issue_request(
             'access/ticket',
             {
               'username' => @proxmox_username,
-              'password' => @proxmox_ticket || @proxmox_password,
+              'password' => @proxmox_password,
               'realm'    => @realm
             },
             {},
@@ -225,19 +275,22 @@ module Fog
             })
 
           rescue Excon::Errors::HTTPStatusError => error
+            error_code = error.response.status
             error_response = Fog::JSON.decode(error.response.body)
-            puts error_response.inspect
-
-            error_code = error_response.values.first['errorcode']
-            error_text = error_response.values.first['errortext']
+            error_text = error_response.values.first['errortext'] unless error_response['data'].nil?
+            error_text ||= ""
 
             case error_code
+              when 500
+                raise Fog::Compute::Proxmox::ItemNotFound, error_text
+              when 501
+                raise Fog::Compute::Proxmox::NotImplemented, error_text
               when 401
-                raise Fog::Compute::Cloudstack::Unauthorized, "(#{error_code})".error_text
+                raise Fog::Compute::Proxmox::Unauthorized, error_text
               when 431
-                raise Fog::Compute::Cloudstack::BadRequest, "(#{error_code})".error_text
+                raise Fog::Compute::Proxmox::BadRequest, error_text
               else
-                raise Fog::Compute::Cloudstack::Error, "(#{error_code})".error_text
+                raise Fog::Errors::Error, "#{error_code}: " + error_text
             end
           end
 
