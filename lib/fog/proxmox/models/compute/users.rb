@@ -14,7 +14,6 @@ module Fog
         end
 
         def get(userid)
-          
           self.all( :userid => userid ).first
         rescue Fog::Errors::NotFound
           nil

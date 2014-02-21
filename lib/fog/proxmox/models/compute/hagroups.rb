@@ -14,7 +14,7 @@ module Fog
         end
 
         def get(id)
-          hagroup = service.access_request( :command => "ha/groups#{'/' + id unless id.nil?}" )
+          hagroup = service.cluster_request( :command => "ha/groups#{'/' + id unless id.nil?}" )
           new hagroup.first if hagroup
         rescue Fog::Errors::NotFound
           nil

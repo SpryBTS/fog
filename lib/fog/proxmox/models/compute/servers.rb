@@ -11,11 +11,19 @@ module Fog
 
         def all(filters = {})
           filters[:type] = ['qemu', 'openvz']
-          load( service.cluster_request( { :command => 'resources', :filters => filters } ) )
+          load(
+            service.cluster_request( {
+              :command => 'resources',
+              :filters => filters
+            } ).map!{ |r|
+              r['id'].gsub!(/^\/?#{r['type']}\//,'')
+              r
+            }
+          )
         end
 
         def get(id)
-          self.all( :id => id ).first
+          self.all( :vmid => id ).first
         rescue Fog::Errors::NotFound
           nil
         end

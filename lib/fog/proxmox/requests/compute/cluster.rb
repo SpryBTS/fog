@@ -8,10 +8,12 @@ module Fog
           options.reject!{|k,v| ( v.nil? or k == :command) }
           options[:method] ||= 'GET'
           
-          request("cluster#{'/' + command unless command.nil?}", options ).map!{ |r|
-            r['id'].gsub!(/^\/?#{r['type']}\//,'') if ( r.key?('id') and r.key?('type') )
-            r
-          }
+          response = request("cluster#{'/' + command unless command.nil?}", options )
+
+          response = [response] if response.is_a? Hash
+
+          response
+
         end
 
       end

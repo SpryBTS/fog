@@ -14,8 +14,10 @@ module Fog
         end
 
         def get(poolid)
-          pool = service.pools_request( :command => "pools#{'/' + poolid unless poolid.nil?}" )
-          new pool.first if pool
+          if pool = service.pools_request( :command => poolid )
+            pool['poolid'] = poolid
+            new (pool)
+          end
         rescue Fog::Errors::NotFound
           nil
         end
