@@ -67,7 +67,7 @@ module Fog
 
       request :create_acl
 #      request :create_backup
-#      request :create_group
+      request :create_group
 #      request :create_pool
 #      request :create_realm
 #      request :create_role
@@ -76,7 +76,7 @@ module Fog
 #      request :create_users
       request :delete_acl
 #      request :delete_backup
-#      request :delete_group
+      request :delete_group
 #      request :delete_pool
 #      request :delete_realm
 #      request :delete_role
@@ -86,7 +86,7 @@ module Fog
 #      request :destroy_server
       request :list_acls
 #      request :list_backups
-#      request :list_groups
+      request :list_groups
 #      request :list_logs
 #      request :list_nodes
 #      request :list_openvzs
@@ -183,12 +183,6 @@ module Fog
           headers ||= {}
           options.reject!{|k,v| ( v.nil? or [:command, :filters, :method, :headers].include? k ) }
 
-          puts "DEBUG: command :- #{command.inspect}"
-          puts "DEBUG: filters :- #{filters.inspect}"
-          puts "DEBUG: method :- #{method.inspect}"
-          puts "DEBUG: headers :- #{headers.inspect}"
-          puts "DEBUG: options :- #{options.inspect}"
-          
           # Session management
           if has_session?
             headers = auth_session(headers)
@@ -197,7 +191,14 @@ module Fog
           end
 
           headers['CSRFPreventionToken'] = @proxmox_csrf if [:post, :put, :delete].include? method
+          headers['Content-Type'] = "application/x-www-form-urlencoded" if [:post, :put].include? method
 
+          puts "DEBUG: command :- #{command.inspect}"
+          puts "DEBUG: filters :- #{filters.inspect}"
+          puts "DEBUG: method :- #{method.inspect}"
+          puts "DEBUG: headers :- #{headers.inspect}"
+          puts "DEBUG: options :- #{options.inspect}"
+          
           response = issue_request(command, options, headers, method)
           response = Fog::JSON.decode(response.body)['data'] unless response.body.empty?
 
@@ -276,9 +277,9 @@ module Fog
 
           rescue Excon::Errors::HTTPStatusError => error
             error_code = error.response.status
+            puts "DEBUG error.repsonse: #{error.response.inspect}"
             error_response = Fog::JSON.decode(error.response.body)
-            error_text = error_response.values.first['errortext'] unless error_response['data'].nil?
-            error_text ||= ""
+            error_text = error_response['errors'] unless error_response['errors'].nil?
 
             case error_code
               when 500
@@ -290,7 +291,7 @@ module Fog
               when 431
                 raise Fog::Compute::Proxmox::BadRequest, error_text
               else
-                raise Fog::Errors::Error, "#{error_code}: " + error_text
+                raise Fog::Errors::Error, "#{error_code}: #{error_text}"
             end
           end
 

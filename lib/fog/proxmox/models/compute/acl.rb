@@ -16,38 +16,27 @@ module Fog
         attr_accessor :groups, :users
         
         def save
-          requires :path
-          requires :roleid
-
-          data = {
-            'path'      => self.path,
-            'propagate' => self.propagate,
-            'roles'     => self.roleid,
-          }
-          
-          data['groups'] = self.groups unless self.groups.nil?
-          data['users'] = self.users unless self.users.nil?
-
-          result = service.create_acl data
-            
+          update( service.create_acl )
         end
 
         def destroy
+          update( service.delete_acl )
+        end
+        
+        def update( &func )
           requires :path
           requires :roleid
 
           data = {
             'path'      => self.path,
-            'propagate' => self.propagate,
             'roles'     => self.roleid,
           }
-
+          
           data['propagate'] = self.propagate unless self.propagate.nil?
           data['groups'] = self.groups unless self.groups.nil?
           data['users'] = self.users unless self.users.nil?
-
-          result = service.delete_acl data
-
+          
+          func
         end
         
       end
