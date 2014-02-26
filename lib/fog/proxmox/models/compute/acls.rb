@@ -10,7 +10,6 @@ module Fog
         model Fog::Compute::Proxmox::Acl
 
         def all( filters = {} )
-#          load( service.access_request( { :command => 'acl', :filters => filters } ) )
           load service.list_acls( :filters => filters )
         end
 
