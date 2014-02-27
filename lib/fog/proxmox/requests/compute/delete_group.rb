@@ -6,13 +6,20 @@ module Fog
         def delete_group(options={})
           options.merge!(
             :method => :delete, 
-            :command => 'access/groups/' + options['groupid'],
+            :command => 'access/groups/' + options[:groupid],
           )
-          options.delete( 'groupid' )
+          options.delete( :groupid )
           request(options)
         end
 
       end
+      
+      class Mock
+        def delete_group(options={})
+          Fog::Mock.not_implemented
+        end
+      end
+
     end
   end
 end

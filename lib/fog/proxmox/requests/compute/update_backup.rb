@@ -3,19 +3,19 @@ module Fog
     class Proxmox
       class Real
 
-        def update_group(options={})
+        def update_backup(options={})
           options.merge!(
             :method => :put,
-            :command => 'access/groups/' + options['groupid'],
+            :command => 'cluster/backup/' + options['id'],
           )
-          options.delete( 'groupid' )
+          options.delete( 'id' )
           request(options)
         end
 
       end
       
       class Mock
-        def update_group(options={})
+        def update_backup(options={})
           Fog::Mock.not_implemented
         end
       end

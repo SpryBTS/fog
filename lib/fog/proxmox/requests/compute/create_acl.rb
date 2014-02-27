@@ -7,12 +7,18 @@ module Fog
           options.merge!(
             :method => :put, 
             :command => 'access/acl',
-            :delete => 0,
           )
           request(options)
         end
 
       end
+      
+      class Mock
+        def create_acl(options={})
+          Fog::Mock.not_implemented
+        end
+      end
+        
     end
   end
 end

@@ -3,11 +3,11 @@ module Fog
     class Proxmox
       class Real
 
-        def list_groups(options={})
-          command = "access/groups"
-          if ( options.key?(:groupid) )
-            command = command + '/' + "#{options[:groupid]}"
-            options.delete(:groupid)
+        def list_backups(options={})
+          command = "cluster/backup"
+          if ( options.key?(:id) )
+            command = command + '/' + "#{options[:id]}"
+            options.delete(:id)
           end
             
           options.merge!(
@@ -20,7 +20,7 @@ module Fog
       end
       
       class Mock
-        def list_groups(options={})
+        def list_backups(options={})
           Fog::Mock.not_implemented
         end
       end

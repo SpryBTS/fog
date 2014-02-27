@@ -3,11 +3,11 @@ module Fog
     class Proxmox
       class Real
 
-        def list_groups(options={})
-          command = "access/groups"
-          if ( options.key?(:groupid) )
-            command = command + '/' + "#{options[:groupid]}"
-            options.delete(:groupid)
+        def list_realms(options={})
+          command = "access/domains"
+          if ( options.key?(:realm) )
+            command = command + '/' + "#{options[:realm]}"
+            options.delete(:realm)
           end
             
           options.merge!(
@@ -20,7 +20,7 @@ module Fog
       end
       
       class Mock
-        def list_groups(options={})
+        def list_realms(options={})
           Fog::Mock.not_implemented
         end
       end

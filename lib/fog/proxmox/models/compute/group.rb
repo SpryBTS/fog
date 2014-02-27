@@ -11,6 +11,13 @@ module Fog
         attribute :comment
         attribute :members
 
+        attr_accessor :loaded
+
+        def initialise
+          self.loaded = false
+          super
+        end
+        
         def save
           requires :groupid
 
@@ -19,10 +26,15 @@ module Fog
             'comment'     => comment,
           }
 
-          service.create_group( options )
+          if self.loaded then
+            service.update_group( options )
+          else
+            service.create_group( options )
+          end
+          true
         end
         
-        def delete
+        def destroy
           requires :groupid
           
           options = {
@@ -30,6 +42,7 @@ module Fog
           }
 
           service.delete_group( options )
+          true
         end
         
       end

@@ -21,8 +21,10 @@ module Fog
         def get(groupid)
           group = service.list_groups( :groupid => groupid )
           if group
-            group[:groupid] = groupid
-            new(group)
+            agroup = new(group)
+            agroup.groupid = groupid
+            agroup.loaded = true
+            return agroup
           end
         rescue Fog::Errors::NotFound
           nil

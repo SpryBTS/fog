@@ -22,8 +22,10 @@ module Fog
 
       model_path 'fog/proxmox/models/compute'
       # access
-      model       :acl
-      collection  :acls
+      # ACL access is a bit hard to model, requests should suffice.
+      # There is really no unique identity for each ACL.
+#      model       :acl
+#      collection  :acls
       model       :realm
       collection  :realms
       model       :group
@@ -66,42 +68,52 @@ module Fog
       request_path 'fog/proxmox/requests/compute'
 
       request :create_acl
-#      request :create_backup
-      request :create_group
-#      request :create_pool
-#      request :create_realm
-#      request :create_role
-#      request :create_server
-#      request :create_store
-#      request :create_users
-      request :delete_acl
-#      request :delete_backup
-      request :delete_group
-#      request :delete_pool
-#      request :delete_realm
-#      request :delete_role
-#      request :delete_server
-#      request :delete_store
-#      request :delete_user
-#      request :destroy_server
       request :list_acls
-#      request :list_backups
+
+      request :create_backup
+      request :delete_backup
+      request :update_backup
+      request :list_backups
+
+      request :create_group
+      request :delete_group
+      request :update_group
       request :list_groups
-#      request :list_logs
-#      request :list_nodes
-#      request :list_openvzs
+
+#      request :create_pool
+#      request :delete_pool
 #      request :list_pools
-#      request :list_qemus
-#      request :list_realms
-#      request :list_resources
+
+      request :create_realm
+      request :delete_realm
+      request :update_realm
+      request :list_realms
+
+#      request :create_role
+#      request :delete_role
 #      request :list_roles
+
+#      request :create_server
+#      request :destroy_server
 #      request :list_servers
-#      request :list_stores
-#      request :list_tasks
-#      request :list_users
 #      request :migrate_server
 #      request :start_server
 #      request :stop_server
+
+#      request :delete_store
+#      request :create_store
+#      request :list_stores
+
+#      request :create_users
+#      request :delete_user
+#      request :list_users
+
+#      request :list_logs
+#      request :list_nodes
+#      request :list_openvzs
+#      request :list_qemus
+#      request :list_resources
+#      request :list_tasks
 
       class Mock
 
