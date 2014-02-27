@@ -3,19 +3,19 @@ module Fog
     class Proxmox
       class Real
 
-        def update_group(options={})
+        def update_realm(options={})
           options.merge!(
             :method => :put,
-            :command => 'access/groups/' + options['groupid'],
+            :command => 'access/domains/' + options['realm'],
           )
-          options.delete( 'groupid' )
+          options.delete( 'realm' )
           request(options)
         end
 
       end
       
       class Mock
-        def update_group(options={})
+        def update_realm(options={})
           Fog::Mock.not_implemented
         end
       end

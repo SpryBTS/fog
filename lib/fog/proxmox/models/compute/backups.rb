@@ -9,13 +9,22 @@ module Fog
 
         model Fog::Compute::Proxmox::Backup
 
+        def create( attributes )
+          model = self.new(attributes)
+          model.save
+        end
+        
         def all( filters = {} )
-          load( service.cluster_request( { :command => 'backup', :filters => filters } ) )
+          load service.list_backups( :filters => filters )
         end
 
         def get(id)
-          backup = service.cluster_request( :command => "backup#{'/' + id unless id.nil?}" )
-          new backup.first if backup
+          backup = service.list_backups( :id => id )
+          if backup
+            abackup = new(backup)
+            abackup.loaded = true
+            return abackup
+          end
         rescue Fog::Errors::NotFound
           nil
         end

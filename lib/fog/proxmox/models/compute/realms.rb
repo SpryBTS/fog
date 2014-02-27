@@ -9,14 +9,22 @@ module Fog
 
         model Fog::Compute::Proxmox::Realm
 
+        def create( attributes )
+          model = self.new(attributes)
+          model.save
+        end
+        
         def all( filters = {} )
-          load( service.access_request( { :command => 'domains', :filters => filters } ) )
+          load service.list_realms( :filters => filters )
         end
 
-        def get(realm)
-          if realm = service.access_request( :command => "domains#{'/' + realm unless realm.nil?}" )
-            realm['realm'] = realm
-            new realm
+        def get(realmid)
+          realm = service.list_realms( :realm => realmid )
+          if realm
+            arealm = new realm
+            arealm.realm = realmid
+            arealm.loaded = true
+            return arealm
           end
         rescue Fog::Errors::NotFound
           nil
