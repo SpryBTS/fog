@@ -5,10 +5,10 @@ module Fog
 
         def delete_group(options={})
           options.merge!(
-            :method => :delete, 
-            :command => 'access/groups/' + options[:groupid],
+            :method => :delete,
+            :command => 'access/groups/' + options['groupid'],
           )
-          options.delete( :groupid )
+          options.delete( 'groupid' )
           request(options)
         end
 
