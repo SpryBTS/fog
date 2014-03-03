@@ -89,9 +89,14 @@ module Fog
       request :update_realm
       request :list_realms
 
-#      request :create_role
-#      request :delete_role
-#      request :list_roles
+      request :create_role
+      request :delete_role
+      request :update_role
+      request :list_roles
+
+#      request :create_users
+#      request :delete_user
+#      request :list_users
 
 #      request :create_server
 #      request :destroy_server
@@ -103,10 +108,6 @@ module Fog
 #      request :delete_store
 #      request :create_store
 #      request :list_stores
-
-#      request :create_users
-#      request :delete_user
-#      request :list_users
 
 #      request :list_logs
 #      request :list_nodes
