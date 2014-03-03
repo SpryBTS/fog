@@ -9,12 +9,23 @@ module Fog
 
         model Fog::Compute::Proxmox::User
 
+        def create( attributes )
+          model = self.new(attributes)
+          model.save
+        end
+        
         def all( filters = {} )
-          load( service.access_request( { :command => 'users', :filters => filters } ) )
+          load service.list_users( :filters => filters )
         end
 
         def get(userid)
-          self.all( :userid => userid ).first
+          user = service.list_users( :userid => userid )
+          if user
+            auser = new user
+            auser.userid = userid
+            auser.loaded = true
+            return auser
+          end
         rescue Fog::Errors::NotFound
           nil
         end

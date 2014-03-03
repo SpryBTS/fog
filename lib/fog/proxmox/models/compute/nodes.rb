@@ -9,12 +9,16 @@ module Fog
 
         model Fog::Compute::Proxmox::Node
 
-        def all( filters = {} )
-          load( service.nodes_request( :filters => filters ) )
+        def all( options = {} )
+          load service.list_nodes( options )
         end
 
-        def get(node)
-          self.all( :id => "#{'node/' + node unless node.nil?}" ).first
+        def get(nodeid)
+          node = service.list_nodes( :filters => { :node => nodeid } ).first
+          if node
+            anode = new node
+            return anode
+          end
         rescue Fog::Errors::NotFound
           nil
         end

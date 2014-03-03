@@ -80,9 +80,10 @@ module Fog
       request :update_group
       request :list_groups
 
-#      request :create_pool
-#      request :delete_pool
-#      request :list_pools
+      request :create_pool
+      request :delete_pool
+      request :update_pool
+      request :list_pools
 
       request :create_realm
       request :delete_realm
@@ -94,9 +95,10 @@ module Fog
       request :update_role
       request :list_roles
 
-#      request :create_users
-#      request :delete_user
-#      request :list_users
+      request :create_user
+      request :delete_user
+      request :update_user
+      request :list_users
 
 #      request :create_server
 #      request :destroy_server
@@ -109,12 +111,12 @@ module Fog
 #      request :create_store
 #      request :list_stores
 
-#      request :list_logs
-#      request :list_nodes
+      request :list_logs
+      request :list_nodes
+      request :list_resources
+      request :list_tasks
 #      request :list_openvzs
 #      request :list_qemus
-#      request :list_resources
-#      request :list_tasks
 
       class Mock
 
@@ -173,7 +175,7 @@ module Fog
           @scheme             = options[:scheme]             || 'https'
           @realm              = options[:realm]              || 'pam'
 
-          @connection = Fog::Connection.new(
+          @connection = Fog::Core::Connection.new(
             "#{@scheme}://#{@host}:#{@port}#{@api}",
             @persistent, @connection_options
           )

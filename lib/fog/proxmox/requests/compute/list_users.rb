@@ -3,12 +3,12 @@ module Fog
     class Proxmox
       class Real
 
-        def list_roles(options={})
-          command = "access/roles"
-#          if ( options.key?(:roleid) )
-#            command = command + '/' + "#{options[:roleid]}"
-#            options.delete(:roleid)
-#          end
+        def list_users(options={})
+          command = "access/users"
+          if ( options.key?(:userid) )
+            command = command + '/' + "#{options[:userid]}"
+            options.delete(:userid)
+          end
             
           options.merge!(
             :command => command
@@ -20,7 +20,7 @@ module Fog
       end
       
       class Mock
-        def list_roles(options={})
+        def list_users(options={})
           Fog::Mock.not_implemented
         end
       end

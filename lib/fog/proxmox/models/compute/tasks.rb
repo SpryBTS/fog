@@ -9,12 +9,16 @@ module Fog
 
         model Fog::Compute::Proxmox::Task
 
-        def all( filters = {} )
-          load( service.cluster_request( { :command => 'tasks', :filters => filters } ) )
+        def all( options = {} )
+          load service.list_tasks( options )
         end
 
-        def get( upid )
-          self.all( :upid => upid ).first
+        def get(upid)
+          task = service.list_tasks( :filters => { :upid => upid } ).first
+          if task
+            atask = new task
+            return atask
+          end
         rescue Fog::Errors::NotFound
           nil
         end

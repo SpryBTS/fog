@@ -9,14 +9,14 @@ module Fog
 
         model Fog::Compute::Proxmox::Resource
 
-        def all( filters = {} )
-          load( service.cluster_request( { :command => 'resources', :filters => filters } ) )
+        def all( options = {} )
+          load service.list_resources( options )
         end
 
         def get( id )
-          self.all( :id => id ).first
+          self.all( :filters => { :id => id } ).first
         rescue Fog::Errors::NotFound
-            nil
+          nil
         end
       
       end

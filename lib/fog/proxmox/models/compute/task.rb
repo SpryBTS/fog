@@ -17,6 +17,21 @@ module Fog
         attribute :id
         attribute :type
 
+        attr_accessor :errors, :limit, :start, :userfilter, :vmid
+
+        def destroy
+          requires :node
+          requires :upid
+          
+          options = {
+            'upid' => upid,
+            'node' => node
+          }
+
+          service.delete_task( options )
+          true
+        end
+
       end
 
     end
