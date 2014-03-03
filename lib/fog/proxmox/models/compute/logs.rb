@@ -9,12 +9,16 @@ module Fog
 
         model Fog::Compute::Proxmox::Log
 
-        def all( filters = {} )
-          load( service.cluster_request( { :command => 'log', :filters => filters } ) )
+        def all( options = {} )
+          load service.list_logs( options )
         end
 
-        def get( uid )
-          self.all( :uid => uid ).first
+        def get(uid)
+          log = service.list_logs( :filters => { :uid => uid } ).first
+          if log
+            alog = new log
+            return alog
+          end
         rescue Fog::Errors::NotFound
           nil
         end

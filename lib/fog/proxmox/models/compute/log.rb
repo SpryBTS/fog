@@ -16,6 +16,8 @@ module Fog
         attribute :pri
         attribute :tag
 
+        attr_accessor :max
+        
       end
 
     end

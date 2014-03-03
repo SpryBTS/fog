@@ -19,7 +19,7 @@ module Fog
         end
 
         def get(roleid)
-          role = service.list_roles( :roleid => roleid )
+          role = service.list_roles( :filters => { :roleid => roleid } ).first
           if role
             arole = new role
             arole.roleid = roleid
