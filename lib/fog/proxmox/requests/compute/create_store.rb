@@ -3,19 +3,18 @@ module Fog
     class Proxmox
       class Real
 
-        def list_roles(options={})
-            
+        def create_store(options={})
           options.merge!(
-            :command => "access/roles"
+            :method => :post,
+            :command => 'storage',
           )
-
           request(options)
         end
 
       end
-      
+
       class Mock
-        def list_roles(options={})
+        def create_store(options={})
           Fog::Mock.not_implemented
         end
       end

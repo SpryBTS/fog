@@ -44,18 +44,10 @@ module Fog
       # nodes
       model       :node
       collection  :nodes
-      model       :openvz
-      collection  :openvzs
-      model       :qemu
-      collection  :qemus
       model       :server
       collection  :servers
       model       :log
       collection  :logs
-#      model       :service
-#      collection  :services
-#      model       :scan
-#      collection  :scans
       model       :task
       collection  :tasks
       # storage
@@ -67,6 +59,8 @@ module Fog
       
       request_path 'fog/proxmox/requests/compute'
 
+      request :request_action
+      
       request :create_acl
       request :list_acls
 
@@ -99,24 +93,33 @@ module Fog
       request :delete_user
       request :update_user
       request :list_users
+      
+      request :create_hagroup
+      request :delete_hagroup
+      request :update_hagroup
+      request :list_hagroups
 
-#      request :create_server
-#      request :destroy_server
-#      request :list_servers
-#      request :migrate_server
-#      request :start_server
-#      request :stop_server
+      request :create_server
+      request :clone_server
+      request :delete_server
+      request :shutdown_server
+      request :suspend_server
+      request :resume_server
+      request :list_servers
+      request :migrate_server
+      request :start_server
+      request :stop_server
+      request :reset_server
 
-#      request :delete_store
-#      request :create_store
-#      request :list_stores
+      request :create_store
+      request :delete_store
+      request :update_store
+      request :list_stores
 
       request :list_logs
       request :list_nodes
       request :list_resources
       request :list_tasks
-#      request :list_openvzs
-#      request :list_qemus
 
       class Mock
 

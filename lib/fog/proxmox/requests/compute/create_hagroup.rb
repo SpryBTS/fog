@@ -3,19 +3,18 @@ module Fog
     class Proxmox
       class Real
 
-        def list_roles(options={})
-            
+        def create_hagroup(options={})
           options.merge!(
-            :command => "access/roles"
+            :method => :post,
+            :command => 'cluster/ha/groups',
           )
-
           request(options)
         end
 
       end
-      
+
       class Mock
-        def list_roles(options={})
+        def create_hagroup(options={})
           Fog::Mock.not_implemented
         end
       end

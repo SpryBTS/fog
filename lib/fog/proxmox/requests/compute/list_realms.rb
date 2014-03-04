@@ -6,7 +6,7 @@ module Fog
         def list_realms(options={})
           command = "access/domains"
           if ( options.key?(:realm) )
-            command = command + '/' + "#{options[:realm]}"
+            command = command + '/' + options[:realm]
             options.delete(:realm)
           end
             

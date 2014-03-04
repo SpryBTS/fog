@@ -4,10 +4,9 @@ module Fog
       class Real
 
         def list_logs(options={})
-          command = "cluster/log"
-            
+
           options.merge!(
-            :command => command
+            :command => "cluster/log"
           )
 
           request(options)

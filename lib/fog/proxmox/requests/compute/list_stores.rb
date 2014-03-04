@@ -3,11 +3,11 @@ module Fog
     class Proxmox
       class Real
 
-        def list_backups(options={})
-          command = "cluster/backup"
-          if ( options.key?(:id) )
-            command = command + '/' + options[:id]
-            options.delete(:id)
+        def list_stores(options={})
+          command = "storage"
+          if ( options.key?(:storage) )
+            command = command + '/' + options[:storage]
+            options.delete(:storage)
           end
             
           options.merge!(
@@ -20,7 +20,7 @@ module Fog
       end
       
       class Mock
-        def list_backups(options={})
+        def list_stores(options={})
           Fog::Mock.not_implemented
         end
       end

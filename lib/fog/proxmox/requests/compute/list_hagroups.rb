@@ -3,8 +3,8 @@ module Fog
     class Proxmox
       class Real
 
-        def list_backups(options={})
-          command = "cluster/backup"
+        def list_hagroups(options={})
+          command = "cluster/ha/groups"
           if ( options.key?(:id) )
             command = command + '/' + options[:id]
             options.delete(:id)
@@ -20,7 +20,7 @@ module Fog
       end
       
       class Mock
-        def list_backups(options={})
+        def list_hagroups(options={})
           Fog::Mock.not_implemented
         end
       end

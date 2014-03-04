@@ -6,7 +6,7 @@ module Fog
         def list_groups(options={})
           command = "access/groups"
           if ( options.key?(:groupid) )
-            command = command + '/' + "#{options[:groupid]}"
+            command = command + '/' + options[:groupid]
             options.delete(:groupid)
           end
             

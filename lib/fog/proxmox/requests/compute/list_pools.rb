@@ -6,7 +6,7 @@ module Fog
         def list_pools(options={})
           command = "pools"
           if ( options.key?(:poolid) )
-            command = command + '/' + "#{options[:poolid]}"
+            command = command + '/' + options[:poolid]
             options.delete(:poolid)
           end
             

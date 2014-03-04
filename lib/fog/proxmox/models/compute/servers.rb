@@ -9,21 +9,12 @@ module Fog
 
         model Fog::Compute::Proxmox::Server
 
-        def all(filters = {})
-          filters[:type] = ['qemu', 'openvz']
-          load(
-            service.cluster_request( {
-              :command => 'resources',
-              :filters => filters
-            } ).map!{ |r|
-              r['id'].gsub!(/^\/?#{r['type']}\//,'')
-              r
-            }
-          )
+        def all(options = {})
+          load service.list_servers( options )
         end
 
-        def get(id)
-          self.all( :vmid => id ).first
+        def get(vmid)
+          service.list_servers( :vmid => vmid ).first
         rescue Fog::Errors::NotFound
           nil
         end

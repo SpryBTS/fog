@@ -3,19 +3,20 @@ module Fog
     class Proxmox
       class Real
 
-        def delete_acl(options={})
+        def create_server(options={})
           options.merge!(
-            :method => :put, 
-            :command => 'access/acl',
-            :delete => 1,
+            :method => :post,
+            :command => 'nodes/' + options['node'] + '/' + options['type']
           )
+          options.delete['node']
+          options.delete['type']
           request(options)
         end
 
       end
 
       class Mock
-        def delete_acl(options={})
+        def create_server(options={})
           Fog::Mock.not_implemented
         end
       end
