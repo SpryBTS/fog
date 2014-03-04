@@ -6,9 +6,9 @@ module Fog
         def delete_backup(options={})
           options.merge!(
             :method => :delete, 
-            :command => 'cluster/backup/' + options[:id],
+            :command => 'cluster/backup/' + options['id'],
           )
-          options.delete( :id )
+          options.delete( 'id' )
           request(options)
         end
 

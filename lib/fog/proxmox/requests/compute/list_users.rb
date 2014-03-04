@@ -6,7 +6,7 @@ module Fog
         def list_users(options={})
           command = "access/users"
           if ( options.key?(:userid) )
-            command = command + '/' + "#{options[:userid]}"
+            command = command + '/' + options[:userid]
             options.delete(:userid)
           end
             

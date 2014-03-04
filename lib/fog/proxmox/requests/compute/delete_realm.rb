@@ -6,9 +6,9 @@ module Fog
         def delete_realm(options={})
           options.merge!(
             :method => :delete, 
-            :command => 'access/domains/' + options[:realm],
+            :command => 'access/domains/' + options['realm'],
           )
-          options.delete( :realm )
+          options.delete( 'realm' )
           request(options)
         end
 

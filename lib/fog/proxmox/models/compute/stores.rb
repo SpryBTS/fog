@@ -9,12 +9,17 @@ module Fog
 
         model Fog::Compute::Proxmox::Store
 
-        def all( filters = {} )
-          load( service.stores_request( filters ) )
+        def all( options = {} )
+          load service.list_stores( options )
         end
 
         def get(store)
-          self.all( :storage => store ).first
+          store = service.list_stores( :storage => store )
+          if store
+            astore = new(store)
+            astore.loaded = true
+            return astore
+          end
         rescue Fog::Errors::NotFound
           nil
         end

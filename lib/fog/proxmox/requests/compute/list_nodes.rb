@@ -4,10 +4,9 @@ module Fog
       class Real
 
         def list_nodes(options={})
-          command = "nodes"
             
           options.merge!(
-            :command => command
+            :command => "nodes"
           )
 
           request(options)

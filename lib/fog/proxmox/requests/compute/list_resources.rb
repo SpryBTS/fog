@@ -4,10 +4,9 @@ module Fog
       class Real
 
         def list_resources(options={})
-          command = "cluster/resources"
             
           options.merge!(
-            :command => command
+            :command => "cluster/resources"
           )
 
           request(options)

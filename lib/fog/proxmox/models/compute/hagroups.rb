@@ -9,13 +9,18 @@ module Fog
 
         model Fog::Compute::Proxmox::Hagroup
 
-        def all( filters = {} )
-          load( service.cluster_request( { :command => 'ha/groups', :filters => filters } ) )
+        def create( attributes )
+          model = self.new(attributes)
+          model.save
+        end
+        
+        def all( options = {} )
+          load service.list_hagroups( options )
         end
 
-        def get(id)
-          hagroup = service.cluster_request( :command => "ha/groups#{'/' + id unless id.nil?}" )
-          new hagroup.first if hagroup
+        def get( id )
+          hagroup = service.list_hagroups( :id => id )
+          new (hagroup)
         rescue Fog::Errors::NotFound
           nil
         end

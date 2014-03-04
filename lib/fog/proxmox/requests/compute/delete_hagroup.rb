@@ -3,19 +3,19 @@ module Fog
     class Proxmox
       class Real
 
-        def list_roles(options={})
-            
+        def delete_hagroup(options={})
           options.merge!(
-            :command => "access/roles"
+            :method => :delete,
+            :command => 'cluster/ha/groups/' + options['id'],
           )
-
+          options.delete( 'id' )
           request(options)
         end
 
       end
       
       class Mock
-        def list_roles(options={})
+        def delete_hagroup(options={})
           Fog::Mock.not_implemented
         end
       end
