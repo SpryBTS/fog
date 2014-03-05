@@ -6,11 +6,9 @@ module Fog
         def stop_server(options={})
           options.merge!(
             :method => :post,
-            :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + options['vmid'] + '/status/stop',
+            :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + "#{options['vmid'].to_i}" + '/status/stop',
           )
-          options.delete( 'node' )
-          options.delete( 'type' )
-          options.delete( 'vmid' )
+          %w[ node type vmid ].each { |a| options.delete( a ) }
           request(options)
         end
 

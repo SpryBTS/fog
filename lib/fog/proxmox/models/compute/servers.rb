@@ -14,7 +14,13 @@ module Fog
         end
 
         def get(vmid)
-          service.list_servers( :vmid => vmid ).first
+          vm = service.list_servers( :vmid => vmid ).first
+          vm.delete 'cpu' # This returns a cpu performance number, not related to cpu type attribute
+          if vm
+            avm = new( vm )
+            avm.config
+            avm
+          end
         rescue Fog::Errors::NotFound
           nil
         end

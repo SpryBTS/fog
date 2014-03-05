@@ -6,11 +6,9 @@ module Fog
         def unmount_server(options={})
           options.merge!(
             :method => :post,
-            :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + options['vmid'] + '/status/unmount',
+            :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + "#{options['vmid']}" + '/status/unmount',
           )
-          options.delete( 'node' )
-          options.delete( 'type' )
-          options.delete( 'vmid' )
+          %w[ node type vmid ].each { |a| options.delete( a ) }
           request(options)
         end
 

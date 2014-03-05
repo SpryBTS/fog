@@ -8,8 +8,7 @@ module Fog
             :method => :post,
             :command => 'nodes/' + options['node'] + '/' + options['type']
           )
-          options.delete['node']
-          options.delete['type']
+          %w[ node type ].each { |a| options.delete( a ) }
           request(options)
         end
 
