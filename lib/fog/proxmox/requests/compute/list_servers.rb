@@ -7,7 +7,10 @@ module Fog
           command = "cluster/resources"
           options[:filters] ||= {}
           options[:filters].merge! ( { :type => [ 'qemu', 'openvz' ] } )
-          options[:filters].merge! ( { :vmid => options[:vmid] } ) if options.key?(:vmid)
+          if options.key?(:vmid)
+            options[:filters].merge! ( { :vmid => options[:vmid] } )
+            options.delete( :vmid )
+          end
 
           options.merge!(
             :command => command,

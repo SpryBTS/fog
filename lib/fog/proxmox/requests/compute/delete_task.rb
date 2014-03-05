@@ -8,8 +8,7 @@ module Fog
             :method => :delete,
             :command => 'access/nodes/' + options['node'] + '/tasks/' + options['upid'],
           )
-          options.delete( 'node' )
-          options.delete( 'upid' )
+          %w[ node upid ].each { |a| options.delete( a ) }
           request(options)
           nil
         end

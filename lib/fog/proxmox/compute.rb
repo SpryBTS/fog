@@ -99,17 +99,19 @@ module Fog
       request :update_hagroup
       request :list_hagroups
 
-      request :create_server
       request :clone_server
+      request :create_server
       request :delete_server
-      request :shutdown_server
-      request :suspend_server
-      request :resume_server
+      request :get_server_config
+      request :get_server_status
       request :list_servers
       request :migrate_server
+      request :reset_server
+      request :resume_server
+      request :shutdown_server
       request :start_server
       request :stop_server
-      request :reset_server
+      request :suspend_server
 
       request :create_store
       request :delete_store
@@ -221,6 +223,7 @@ module Fog
           response = Fog::JSON.decode(response.body)['data'] unless response.body.empty?
 
           # Filter response items
+          puts "DEBUG: "
           response.select! { |r|
             match = true
             filters.each_pair{ |k,v|

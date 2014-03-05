@@ -6,6 +6,8 @@ module Fog
 
       class Server < Fog::Compute::Server
 
+        ArrayAttributes = %w[ hostpci ide net parallel sata scsi unused usb virtio ]
+        
         identity  :vmid
 
         # Common attributes
@@ -13,9 +15,11 @@ module Fog
         attribute :type
         attribute :cpuunits
         attribute :description
+        attribute :digest
         attribute :memory
         attribute :onboot
         attribute :pool
+        attribute :status
         attribute :storage
         
         # QEMU specific
@@ -26,22 +30,31 @@ module Fog
         attribute :autostart
         attribute :balloon
         attribute :boot
+        attribute :bootdisk
         attribute :cdrom
         attribute :cores
         attribute :cpu
         attribute :cpulimit
         attribute :freeze
+        attribute :hostpci
         attribute :hotplug
+        attribute :ide
         attribute :keyboard
         attribute :kvm
         attribute :localtime
         attribute :lock
+        attribute :machine
         attribute :migrate_downtime
         attribute :migrate_speed
         attribute :name
+        attribute :net
         attribute :ostype
+        attribute :parallel
         attribute :reboot
+        attribute :sata
+        attribute :scsi
         attribute :scsihw
+        attribute :serial
         attribute :shares
         attribute :smp
         attribute :sockets
@@ -51,24 +64,17 @@ module Fog
         attribute :tdf
         attribute :template
         attribute :unique
-        attribute :vga
-        attribute :watchdog
-        attribute :hostpci
-        attribute :ide
-        attribute :net
-        attribute :parallel
-        attribute :sata
-        attribute :scsi
-        attribute :serial
         attribute :unused
         attribute :usb
+        attribute :vga
         attribute :virtio
+        attribute :watchdog
 
         # Openvz specific
         attribute :cpus
         attribute :disk
         attribute :hostname
-        attribute :ip_address
+        attribute :ip_address,      :aliases => 'ip'
         attribute :nameserver
         attribute :netif
         attribute :password
@@ -78,7 +84,7 @@ module Fog
         attribute :swap
         
         attr_accessor :loaded
-        attr_accessor :skiplock, :newid, :target, :force, :online, :forceStop
+        attr_accessor :skiplock, :newid, :force, :online, :forceStop
         attr_accessor :migratedfrom, :keepActive, :timeout, :snapname, :restore, :delete
 
         def initialise(attributes={})
@@ -87,11 +93,8 @@ module Fog
         end
         
         def save
-          requires :node
-          requires :type
-          requires :vmid
-          
-          options = {
+          options = service_defaults
+          options.merge!({
             'node' => node,
             'type' => type,
             'vmid' => vmid,
@@ -101,7 +104,7 @@ module Fog
             'onboot' => onboot,
             'pool' => pool,
             'storage' => storage,
-          }
+          })
 
           case type
             when 'qemu'
@@ -146,16 +149,13 @@ module Fog
                 'watchdog' => watchdog,
               } )
 
-              options_array( options, 'hostpci', hostpci )
-              options_array( options, 'ide', ide )
-              options_array( options, 'net', net )
-              options_array( options, 'parallel', parallel )
-              options_array( options, 'sata', sata )
-              options_array( options, 'scsi', scsi )
-              options_array( options, 'serial', serial )
-              options_array( options, 'unused', unused )
-              options_array( options, 'usb', usb )
-              options_array( options, 'virtio', virtio )
+              ArrayAttributes.each { |a|
+                count = 0
+                eval(a).each { |v|
+                  options[a + count.to_s] = v
+                  count += 1
+                } unless eval(a).nil?
+              }
 
             when 'openvz'
               requires :ostemplate
@@ -186,165 +186,86 @@ module Fog
         end
         
         def destroy
-          requires :node
-          requires :type
-          requires :vmid
-          
-          options = {
-            'node' => node,
-            'vmid' => vmid,
-            'skiplock' => skiplock,
-          }
+          options = service_defaults
+          options.merge!( 'skiplock' => skiplock )
 
           service.delete_server( options )
         end
 
         def reset
-          requires :node
-          requires :type
-          requires :vmid
-          
-          options = {
-            'node' => node,
-            'type' => type,
-            'vmid' => vmid,
-            'skiplock' => skiplock,
-          }
+          options = service_defaults
+          options.merge!( 'skiplock' => skiplock )
+
           service reset_server( options )
         end
 
         def resume
-          requires :node
-          requires :type
-          requires :vmid
-          
-          options = {
-            'node' => node,
-            'type' => type,
-            'vmid' => vmid,
-            'skiplock' => skiplock,
-          }
-          service resume_server( options )
+          options = service_defaults
+          options.merge!( 'skiplock' => skiplock )
+
+          service.resume_server( options )
         end
 
         def shutdown
-          requires :node
-          requires :type
-          requires :vmid
-          
-          options = {
-            'node' => node,
-            'type' => type,
-            'vmid' => vmid,
+          options = service_defaults
+          options.merge!( {
             'forceStop' => forceStop,
             'keepActive' => keepActive,
             'skiplock' => skiplock,
             'timeout' => timeout,
-          }
-          service shutdown_server( options )
+          } )
+
+          service.shutdown_server( options )
         end
 
         def start
-          requires :node
-          requires :type
-          requires :vmid
-          
-          options = {
-            'node' => node,
-            'type' => type,
-            'vmid' => vmid,
-          }
+          options = service_defaults
           options.merge!( {
             'migratedfrom' => migratedfrom,
             'skiplock' => skiplock,
             'timeout' => timeout,
           } ) if type == 'qemu'
-          service start_server( options )
+          service.start_server( options )
         end
 
         def stop
-          requires :node
-          requires :type
-          requires :vmid
-          
-          options = {
-            'node' => node,
-            'type' => type,
-            'vmid' => vmid,
-          }
+          options = service_defaults
           options.merge!( {
             'keepActive' => keepActive,
             'migratedfrom' => migratedfrom,
             'skiplock' => skiplock,
             'timeout' => timeout,
             } ) if type == 'qemu'
-          service stop_server( options )
+          service.stop_server( options )
         end
 
         def ubc
-          requires :node
-          requires :type
-          requires :vmid
-          
-          options = {
-            'node' => node,
-            'type' => type,
-            'vmid' => vmid,
-          }
-          service ubc_server( options )
+          options = service_defaults
+          serviceubc_server( options )
         end
 
         def suspend
-          requires :node
-          requires :type
-          requires :vmid
-          
-          options = {
-            'node' => node,
-            'type' => type,
-            'vmid' => vmid,
-            'skiplock' => skiplock,
-          }
-          service suspend_server( options )
+          options = service_defaults
+          options.merge!( 'skiplock' => skiplock )
+          service.suspend_server( options )
         end
 
         def mount
-          requires :node
-          requires :type
-          requires :vmid
-          
-          options = {
-            'node' => node,
-            'type' => type,
-            'vmid' => vmid,
-            'skiplock' => skiplock,
-          }
-          service mount_server( options )
+          options = service_defaults
+          options.merge!( 'skiplock' => skiplock )
+          service.mount_server( options )
         end
 
         def umount
-          requires :node
-          requires :type
-          requires :vmid
-          
-          options = {
-            'node' => node,
-            'type' => type,
-            'vmid' => vmid,
-          }
-          service umount_server( options )
+          options = service_defaults
+          service.umount_server( options )
         end
 
         def clone
-          requires :node
-          requires :type
-          requires :vmid
           requires :newid
           
-          options = {
-            'node' => node,
-            'type' => type,
-            'vmid' => vmid,
+          options = service_defaults
+          options.merge!( {
             'newid' => newid,
             'description' => description,
             'format' => format,
@@ -354,37 +275,52 @@ module Fog
             'snapname' => snapname,
             'storage' => storage,
             'target' => target,
-          }
+          } )
           service.clone_server( options )
         end
         
-        def migrate
-          requires :node
-          requires :type
-          requires :vmid
-          requires :target
-          
-          options = {
-            'node' => node,
-            'type' => type,
-            'vmid' => vmid,
-            'target' => target,
-            'force' => force,
-            'online' => online,
-          }
+        def migrate(options = {})
+          options.merge! service_defaults
           service.migrate_server( options )
+        end
+        
+        def config
+          options = service_defaults
+
+          data = service.get_server_config( options )
+          # Decode received attributes for mulitple devices into arrays
+          newdata = {}
+          data.each{ |a, v|
+            as = a.split(/(\d+)/)
+            if (ArrayAttributes.include?(as[0]) and not as[1].nil?)
+              newdata[as[0]] ||= []
+              newdata[as[0]][as[1].to_i] = v
+              data[a] = nil
+            end
+          }
+          merge_attributes(data)
+          merge_attributes(newdata)
+        end
+        
+        def current_status
+          options = service_defaults
+          data = service.get_server_status( options )
+          merge_attributes( :status => data['status'] ) unless data['status'].nil?
+          data['status']
         end
         
         private
         
-        def options_array( options, prefix, source )
-
-          count = 0
-          source.each { |v|
-            options[prefix + count.to_s] = v
-            count += 1
-          } unless source.nil?
-          options
+        def service_defaults
+          requires :node
+          requires :type
+          requires :vmid
+          
+          {
+            'node' => node,
+            'type' => type,
+            'vmid' => vmid,
+          }
         end
         
       end

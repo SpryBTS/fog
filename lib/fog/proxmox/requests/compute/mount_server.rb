@@ -8,9 +8,7 @@ module Fog
             :method => :post,
             :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + options['vmid'] + '/status/mount',
           )
-          options.delete( 'node' )
-          options.delete( 'type' )
-          options.delete( 'vmid' )
+          %w[ node type vmid ].each { |a| options.delete( a ) }
           request(options)
         end
 
