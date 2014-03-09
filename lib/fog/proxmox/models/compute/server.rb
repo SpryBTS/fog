@@ -84,7 +84,7 @@ module Fog
         attribute :swap
         
         attr_accessor :loaded
-        attr_accessor :skiplock, :newid, :force, :online, :forceStop
+        attr_accessor :skiplock, :forceStop
         attr_accessor :migratedfrom, :keepActive, :timeout, :snapname, :restore, :delete
 
         def initialise(attributes={})
@@ -185,28 +185,28 @@ module Fog
           end
         end
         
-        def destroy
+        def destroy(options = {})
           options = service_defaults
           options.merge!( 'skiplock' => skiplock )
 
           service.delete_server( options )
         end
 
-        def reset
+        def reset(options = {})
           options = service_defaults
           options.merge!( 'skiplock' => skiplock )
 
           service reset_server( options )
         end
 
-        def resume
+        def resume(options = {})
           options = service_defaults
           options.merge!( 'skiplock' => skiplock )
 
           service.resume_server( options )
         end
 
-        def shutdown
+        def shutdown(options = {})
           options = service_defaults
           options.merge!( {
             'forceStop' => forceStop,
@@ -218,7 +218,7 @@ module Fog
           service.shutdown_server( options )
         end
 
-        def start
+        def start(options = {})
           options = service_defaults
           options.merge!( {
             'migratedfrom' => migratedfrom,
@@ -228,8 +228,12 @@ module Fog
           service.start_server( options )
         end
 
-        def stop
-          options = service_defaults
+        # @param [Hash] options
+        # :keepActive - boolean
+        # :migratedfrom - 
+        # :skiplock - boolean
+        def stop(options = {})
+          options.merge! service_defaults
           options.merge!( {
             'keepActive' => keepActive,
             'migratedfrom' => migratedfrom,
@@ -244,15 +248,17 @@ module Fog
           serviceubc_server( options )
         end
 
-        def suspend
-          options = service_defaults
-          options.merge!( 'skiplock' => skiplock )
+        # @param [Hash] options
+        # :skiplock - boolean
+        def suspend(options = {})
+          options.merge! service_defaults
           service.suspend_server( options )
         end
 
-        def mount
-          options = service_defaults
-          options.merge!( 'skiplock' => skiplock )
+        # @param [Hash] options
+        # :skiplock - boolean
+        def mount(options = {})
+          options.merge! service_defaults
           service.mount_server( options )
         end
 
@@ -261,24 +267,25 @@ module Fog
           service.umount_server( options )
         end
 
-        def clone
-          requires :newid
-          
-          options = service_defaults
-          options.merge!( {
-            'newid' => newid,
-            'description' => description,
-            'format' => format,
-            'full' => full,
-            'name' => name,
-            'pool' => pool,
-            'snapname' => snapname,
-            'storage' => storage,
-            'target' => target,
-          } )
+        # @param [Hash] options
+        # :newid - integer
+        # :description - string
+        # :format - enum
+        # :full - boolean
+        # :name - string
+        # :pool - string
+        # :snapname - string
+        # :storage - string
+        # :target - string
+        def clone(options = {})
+          options.merge! service_defaults
           service.clone_server( options )
         end
         
+        # @param [Hash] options
+        # :target - string
+        # :online - boolean
+        # :force  - boolean
         def migrate(options = {})
           options.merge! service_defaults
           service.migrate_server( options )
