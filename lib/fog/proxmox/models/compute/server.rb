@@ -6,7 +6,9 @@ module Fog
 
       class Server < Fog::Compute::Server
 
-        ArrayAttributes = %w[ hostpci ide net parallel sata scsi unused usb virtio ]
+        # The attributes listed here are arrays. Config data is returned from the Proxmox
+        # API in a <attribute><index> name format. These are converted into positional array entryies.
+        ArrayAttributes = [ :hostpci, :ide, :net, :parallel, :sata, :scsi, :unused, :usb, :virtio ]
         
         identity  :vmid
 
@@ -84,187 +86,83 @@ module Fog
         attribute :swap
         
         attr_accessor :loaded
-        attr_accessor :skiplock, :forceStop
-        attr_accessor :migratedfrom, :keepActive, :timeout, :snapname, :restore, :delete
 
         def initialise(attributes={})
           self.loaded = false
           super
         end
         
-        def save
-          options = service_defaults
-          options.merge!({
-            'node' => node,
-            'type' => type,
-            'vmid' => vmid,
-            'cpuunits' => cpuunits,
-            'description' => description,
-            'memory' => memory,
-            'onboot' => onboot,
-            'pool' => pool,
-            'storage' => storage,
-          })
+        def save(newoptions = {})
+          options = attributes.merge newoptions
+          options.merge! service_defaults
 
-          case type
-            when 'qemu'
-              options.merge!( {
-                'acpi' => acpi,
-                'agent' => agent,
-                'archive' => archive,
-                'args' => args,
-                'autostart' => autostart,
-                'balloon' => balloon,
-                'boot' => boot,
-                'bootdisk' => bootdisk,
-                'cdrom' => cdrom,
-                'cores' => cores,
-                'cpu' => cpu,
-                'cpulimit' => cpulimit,
-                'delete' => delete,
-                'force' => force,
-                'freeze' => freeze,
-                'hotplug' => hotplug,
-                'keyboard' => keyboard,
-                'kvm' => kvm,
-                'localtime' => localtime,
-                'lock' => lock,
-                'migrate_downtime' => migrate_downtime,
-                'migrate_speed' => migrate_speed,
-                'name' => name,
-                'ostype' => ostype,
-                'reboot' => reboot,
-                'scsihw' => scsihw,
-                'shares' => shares,
-                'skiplock' => skiplock,
-                'smp' => smp,
-                'sockets' => sockets,
-                'startdate' => startdate,
-                'startup' => startup,
-                'tablet' => tablet,
-                'tdf' => tdf,
-                'template' => template,
-                'unique' => unique,
-                'vga' => vga,
-                'watchdog' => watchdog,
-              } )
-
-              ArrayAttributes.each { |a|
-                count = 0
-                eval(a).each { |v|
-                  options[a + count.to_s] = v
-                  count += 1
-                } unless eval(a).nil?
-              }
-
-            when 'openvz'
-              requires :ostemplate
-              
-              options.merge!( {
-                'cpus' => cpus,
-                'disk' => disk,
-                'force' => force,
-                'hostname' => hostname,
-                'ip_address' => ip_address,
-                'nameserver' => nameserver,
-                'netif' => netif,
-                'password' => password,
-                'quotatime' => quotatime,
-                'quotaugidlimit' => quotaugidlimit,
-                'restore' => restore,
-                'searchdomain' => searchdomain,
-                'swap' => swap,
-              } )
-          end
-          
-          if self.loaded then
-            options['digest'] = digest
-            service.update_server( options )
-          else
+          if digest.nil? then
             service.create_server( options )
+          else
+            service.update_server( options )
           end
         end
         
+        # @param [Hash] options
+        # :skiplock - boolean (qemu)
         def destroy(options = {})
-          options = service_defaults
-          options.merge!( 'skiplock' => skiplock )
-
-          service.delete_server( options )
-        end
-
-        def reset(options = {})
-          options = service_defaults
-          options.merge!( 'skiplock' => skiplock )
-
-          service reset_server( options )
-        end
-
-        def resume(options = {})
-          options = service_defaults
-          options.merge!( 'skiplock' => skiplock )
-
-          service.resume_server( options )
-        end
-
-        def shutdown(options = {})
-          options = service_defaults
-          options.merge!( {
-            'forceStop' => forceStop,
-            'keepActive' => keepActive,
-            'skiplock' => skiplock,
-            'timeout' => timeout,
-          } )
-
-          service.shutdown_server( options )
-        end
-
-        def start(options = {})
-          options = service_defaults
-          options.merge!( {
-            'migratedfrom' => migratedfrom,
-            'skiplock' => skiplock,
-            'timeout' => timeout,
-          } ) if type == 'qemu'
-          service.start_server( options )
+          service.delete_server( service_defaults.merge options )
         end
 
         # @param [Hash] options
-        # :keepActive - boolean
-        # :migratedfrom - 
-        # :skiplock - boolean
+        # :skiplock - boolean (qemu)
+        def reset(options = {})
+          service.reset_server( service_defaults.merge options )
+        end
+
+        # @param [Hash] options
+        # :skiplock - boolean (qemu)
+        def resume(options = {})
+          service.resume_server( service_defaults.merge options )
+        end
+
+        # @param [Hash] options
+        # :forceStop - boolean
+        # :keepActive - boolean (qemu)
+        # :skiplock - boolean (qemu)
+        # :timeout - integer
+        def shutdown(options = {})
+          service.shutdown_server( service_defaults.merge options )
+        end
+
+        # @param [Hash] options
+        # :migratedfrom - string (qemu)
+        # :skiplock - boolean (qemu)
+        # :stateuri - string (qemu)
+        def start(options = {})
+          service.start_server( service_defaults.merge options )
+        end
+
+        # @param [Hash] options
+        # :keepActive - boolean (qemu)
+        # :migratedfrom - string (qemu)
+        # :skiplock - boolean (qemu)
+        # :timeout - integer (qemu)
         def stop(options = {})
-          options.merge! service_defaults
-          options.merge!( {
-            'keepActive' => keepActive,
-            'migratedfrom' => migratedfrom,
-            'skiplock' => skiplock,
-            'timeout' => timeout,
-            } ) if type == 'qemu'
-          service.stop_server( options )
+          service.stop_server( service_defaults.merge options )
         end
 
         def ubc
-          options = service_defaults
-          serviceubc_server( options )
+          service.ubc_server( service_defaults.merge options )
         end
 
         # @param [Hash] options
-        # :skiplock - boolean
+        # :skiplock - boolean (qemu)
         def suspend(options = {})
-          options.merge! service_defaults
-          service.suspend_server( options )
+          service.suspend_server( service_defaults.merge options )
         end
 
-        # @param [Hash] options
-        # :skiplock - boolean
-        def mount(options = {})
-          options.merge! service_defaults
-          service.mount_server( options )
+        def mount
+          service.mount_server( service_defaults.merge options )
         end
 
         def umount
-          options = service_defaults
-          service.umount_server( options )
+          service.umount_server( service_defaults.merge options )
         end
 
         # @param [Hash] options
@@ -278,19 +176,100 @@ module Fog
         # :storage - string
         # :target - string
         def clone(options = {})
-          options.merge! service_defaults
-          service.clone_server( options )
+          service.clone_server( service_defaults.merge options )
         end
         
         # @param [Hash] options
         # :target - string
         # :online - boolean
-        # :force  - boolean
+        # :force  - boolean (qemu)
         def migrate(options = {})
-          options.merge! service_defaults
-          service.migrate_server( options )
+          service.migrate_server( service_defaults.merge options )
         end
         
+        # @param [Hash] options
+        # :limit - integer
+        # :start - integer
+        def vncproxy
+          service.vncproxy_server( service_defaults.merge options )
+        end
+        
+        # @param [Hash] options
+        # :limit - integer
+        # :start - integer
+        def initlog(options = {})
+          service.initlog_server( service_defaults.merge options )
+        end
+        
+        # @param [Hash] options
+        # :ds - string
+        # :timeframe - enum
+        # :cf - enum
+        def rrd(options = {})
+          service.rrd_server( service_defaults.merge options )
+        end
+        
+        # @param [Hash] options
+        # :timeframe - enum
+        # :cf - enum
+        def rrddata(options = {})
+          service.rrddata_server( service_defaults.merge options )
+        end
+        
+        # @param [Hash] options
+        # :feature - enum
+        # :snapname - string
+        def feature(options = {})
+          service.feature_server( service_defaults.merge options )
+        end
+        
+        # @param [Hash] options
+        # :command - string
+        def monitor(options = {})
+          service.monitor_server( service_defaults.merge options )
+        end
+        
+        # @param [Hash] options
+        # :disk - enum
+        # :size - string
+        # :digest - string
+        # :skiplock - boolean
+        def resize(options = {})
+          service.resize_server( service_defaults.merge options )
+        end
+        
+        # @param [Hash] options
+        # :key - string
+        # :skiplock - boolean
+        def sendkey(options = {})
+          service.sendkey_server( service_defaults.merge options )
+        end
+        
+        # @param [Hash] options
+        # :disk - enum
+        def create_template(options = {})
+          service.template_server( service_defaults.merge options )
+        end
+        
+        # @param [Hash] options
+        # :idlist - string
+        # :force - boolean
+        def unlink(options = {})
+          service.unlink_server( service_defaults.merge options )
+        end
+        
+        # @param [Hash] options
+        # :snapname - string
+        # :description - string
+        # :freezefs - boolean
+        # :vmstate - boolean
+        def snapshot(options = {})
+          service.snapshot_server( service_defaults.merge options )
+        end
+        def snapshot
+          service.get_snapshots_server( service_defaults )
+        end
+
         def config
           options = service_defaults
 
@@ -299,10 +278,10 @@ module Fog
           newdata = {}
           data.each{ |a, v|
             as = a.split(/(\d+)/)
-            if (ArrayAttributes.include?(as[0]) and not as[1].nil?)
+            if (ArrayAttributes.include?(as[0].to_sym) and not as[1].nil?)
               newdata[as[0]] ||= []
               newdata[as[0]][as[1].to_i] = v
-              data[a] = nil
+              data.delete(a)
             end
           }
           merge_attributes(data)

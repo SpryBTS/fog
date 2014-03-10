@@ -15,11 +15,10 @@ module Fog
 
         def get(vmid)
           vm = service.list_servers( :vmid => vmid ).first
-          vm.delete 'cpu' # This returns a cpu performance number, not related to cpu type attribute
           if vm
-            avm = new( vm )
-            avm.config
-            avm
+            # Remove attributes that conflict
+            %w[ disk netout maxdisk maxmem diskread template cpu netin diskwrite mem ].each { |a| vm.delete( a ) }
+            new( vm ).config
           end
         rescue Fog::Errors::NotFound
           nil
