@@ -104,14 +104,26 @@ module Fog
       request :delete_server
       request :get_server_config
       request :get_server_status
+      request :initlog_server
       request :list_servers
       request :migrate_server
+      request :monitor_server
       request :reset_server
+      request :resize_server
       request :resume_server
+      request :rrd_server
+      request :rrddata_server
+      request :sendkey_server
       request :shutdown_server
       request :start_server
       request :stop_server
       request :suspend_server
+      request :template_server
+      request :unlink_server
+      request :update_server
+      request :vncproxy_server
+      request :snapshot_server
+      request :get_snapshots_server
 
       request :create_store
       request :delete_store

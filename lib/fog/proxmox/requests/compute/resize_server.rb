@@ -3,10 +3,10 @@ module Fog
     class Proxmox
       class Real
 
-        def clone_server(options={})
+        def resize_server(options={})
           options.merge!(
             :method => :post,
-            :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/clone",
+            :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + "#{options['vmid']}" + '/resize',
           )
           %w[ node type vmid ].each { |a| options.delete( a ) }
           request(options)
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def clone_server(options={})
+        def resize_server(options={})
           Fog::Mock.not_implemented
         end
       end

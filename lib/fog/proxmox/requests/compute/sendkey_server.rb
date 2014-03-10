@@ -3,10 +3,10 @@ module Fog
     class Proxmox
       class Real
 
-        def clone_server(options={})
+        def sendkey_server(options={})
           options.merge!(
-            :method => :post,
-            :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/clone",
+            :method => :put,
+            :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + "#{options['vmid']}" + '/sendkey',
           )
           %w[ node type vmid ].each { |a| options.delete( a ) }
           request(options)
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def clone_server(options={})
+        def sendkey_server(options={})
           Fog::Mock.not_implemented
         end
       end
