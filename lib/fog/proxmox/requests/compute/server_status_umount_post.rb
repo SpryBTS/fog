@@ -3,10 +3,10 @@ module Fog
     class Proxmox
       class Real
 
-        def unmount_server(options={})
+        def server_status_umount_post(options={})
           options.merge!(
             :method => :post,
-            :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + "#{options['vmid']}" + '/status/unmount',
+            :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/status/unmount",
           )
           %w[ node type vmid ].each { |a| options.delete( a ) }
           request(options)
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def umount_server(options={})
+        def server_status_umount_post(options={})
           Fog::Mock.not_implemented
         end
       end

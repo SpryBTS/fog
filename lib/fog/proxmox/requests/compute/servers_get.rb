@@ -3,8 +3,8 @@ module Fog
     class Proxmox
       class Real
 
-        def list_servers(options={})
-          command = "cluster/resources"
+        def servers_get(options={})
+          
           options[:filters] ||= {}
           options[:filters].merge! ( { :type => [ 'qemu', 'openvz' ] } )
           if options.key?(:vmid)
@@ -13,7 +13,8 @@ module Fog
           end
 
           options.merge!(
-            :command => command,
+            :method => :get,
+            :command => "cluster/resources",
           )
 
           request(options)
@@ -22,7 +23,7 @@ module Fog
       end
       
       class Mock
-        def list_servers(options={})
+        def servers_get(options={})
           Fog::Mock.not_implemented
         end
       end

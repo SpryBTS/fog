@@ -3,7 +3,10 @@ module Fog
     class Proxmox
       class Real
 
-        def unlink_server(options={})
+        def server_unlink_put(options={})
+          %w[ idlist ].each{ |a|
+            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
+          }
           options.merge!(
             :method => :put,
             :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/unlink",
@@ -15,7 +18,7 @@ module Fog
       end
       
       class Mock
-        def unlink_server(options={})
+        def server_unlink_put(options={})
           Fog::Mock.not_implemented
         end
       end

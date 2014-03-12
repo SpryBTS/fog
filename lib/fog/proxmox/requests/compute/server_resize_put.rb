@@ -4,6 +4,9 @@ module Fog
       class Real
 
         def server_resize_put(options={})
+          %w[ disk size ].each{ |a|
+            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
+          }
           options.merge!(
             :method => :put,
             :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/resize",

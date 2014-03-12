@@ -6,7 +6,7 @@ module Fog
         def server_delete(options={})
           options.merge!(
             :method => :delete,
-            :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + "#{options['vmid']}",
+            :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}",
           )
           %w[ node type vmid ].each { |a| options.delete( a ) }
           request(options)

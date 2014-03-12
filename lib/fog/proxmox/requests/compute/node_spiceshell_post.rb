@@ -8,6 +8,7 @@ module Fog
             :method => :post,
             :command => "nodes/#{options['node']}/spiceshell"
           )
+          %w[ node ].each { |a| options.delete( a ) }
           request(options)
         end
 

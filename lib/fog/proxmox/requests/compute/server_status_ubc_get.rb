@@ -3,10 +3,10 @@ module Fog
     class Proxmox
       class Real
 
-        def ubc_server(options={})
+        def server_status_ubc_get(options={})
           options.merge!(
             :method => :get,
-            :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + "#{options['vmid']}" + '/status/ubc',
+            :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/status/ubc",
           )
           %w[ node type vmid ].each { |a| options.delete( a ) }
           request(options)
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def ubc_server(options={})
+        def server_status_ubc_get(options={})
           Fog::Mock.not_implemented
         end
       end

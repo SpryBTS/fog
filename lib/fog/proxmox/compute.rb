@@ -110,6 +110,7 @@ module Fog
       request :server_initlog
       request :server_migrate_post
       request :server_monitor_post
+      request :server_move_disk_post
       request :server_resize_put
       request :server_rrd_get
       request :server_rrddata_get

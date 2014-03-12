@@ -3,10 +3,10 @@ module Fog
     class Proxmox
       class Real
 
-        def vncproxy_server(options={})
+        def server_vncproxy_post(options={})
           options.merge!(
             :method => :post,
-            :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + "#{options['vmid']}" + '/vncproxy',
+            :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/vncproxy",
           )
           %w[ node type vmid ].each { |a| options.delete( a ) }
           request(options)
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def vncproxy_server(options={})
+        def server_vncproxy_post(options={})
           Fog::Mock.not_implemented
         end
       end
