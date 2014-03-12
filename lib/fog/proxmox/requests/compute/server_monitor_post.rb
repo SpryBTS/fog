@@ -3,7 +3,7 @@ module Fog
     class Proxmox
       class Real
 
-        def monitor_server(options={})
+        def server_monitor_post(options={})
           options.merge!(
             :method => :post,
             :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/monitor",
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def monitor_server(options={})
+        def server_monitor_post(options={})
           Fog::Mock.not_implemented
         end
       end

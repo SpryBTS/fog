@@ -3,8 +3,7 @@ module Fog
     class Proxmox
       class Real
 
-        def get_server_config(options={})
-
+        def server_config_get(options={})
           options.merge!(
             :method => :get,
             :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/config/",
@@ -17,7 +16,7 @@ module Fog
       end
       
       class Mock
-        def get_server_config(options={})
+        def server_config_get(options={})
           Fog::Mock.not_implemented
         end
       end
