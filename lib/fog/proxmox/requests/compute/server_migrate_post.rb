@@ -3,7 +3,7 @@ module Fog
     class Proxmox
       class Real
 
-        def migrate_server(options={})
+        def server_migrate_post(options={})
           options.merge!(
             :method => :post,
             :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/migrate",
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def migrate_server(options={})
+        def server_migrate_post(options={})
           Fog::Mock.not_implemented
         end
       end

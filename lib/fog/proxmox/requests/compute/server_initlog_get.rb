@@ -3,7 +3,7 @@ module Fog
     class Proxmox
       class Real
 
-        def initlog_server(options={})
+        def server_initlog_get(options={})
           options.merge!(
             :method => :get,
             :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/initlog",
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def initlog_server(options={})
+        def server_initlog_get(options={})
           Fog::Mock.not_implemented
         end
       end

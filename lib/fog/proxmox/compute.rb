@@ -102,11 +102,11 @@ module Fog
 
       request :server_clone_post
       request :server_config_get
-      request :server_config_put
       request :server_config_post
+      request :server_config_put
       request :server_delete
-      request :server_get
       request :server_feature_get
+      request :server_get
       request :server_initlog
       request :server_migrate_post
       request :server_monitor_post
@@ -124,7 +124,6 @@ module Fog
       request :server_spiceproxy_post
       request :server_status_current_get
       request :server_status_mount_post
-      request :server_status_umount_post
       request :server_status_reset_post
       request :server_status_resume_post
       request :server_status_shutdown_post
@@ -132,6 +131,7 @@ module Fog
       request :server_status_stop_post
       request :server_status_suspend_post
       request :server_status_ubc_get
+      request :server_status_umount_post
       request :server_template_post
       request :server_unlink_put
       request :server_vncproxy_post

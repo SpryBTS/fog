@@ -3,7 +3,7 @@ module Fog
     class Proxmox
       class Real
 
-        def delete_server(options={})
+        def server_delete(options={})
           options.merge!(
             :method => :delete,
             :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + "#{options['vmid']}",
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def delete_server(options={})
+        def server_delete(options={})
           Fog::Mock.not_implemented
         end
       end

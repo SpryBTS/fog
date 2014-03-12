@@ -3,7 +3,7 @@ module Fog
     class Proxmox
       class Real
 
-        def resize_server(options={})
+        def server_resize_put(options={})
           options.merge!(
             :method => :put,
             :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/resize",
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def resize_server(options={})
+        def server_resize_put(options={})
           Fog::Mock.not_implemented
         end
       end
