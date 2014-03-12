@@ -11,23 +11,16 @@ module Fog
         attribute :comment
         attribute :members
 
-        attr_accessor :loaded, :delete, :storage, :vms
+        attr_accessor :loaded
 
         def initialise
           self.loaded = false
           super
         end
         
-        def save
-          requires :poolid
-
-          options = {
-            'poolid'  => poolid,
-            'comment' => comment,
-            'delete'  => delete,
-            'storage' => storage,
-            'vms'     => vms,
-          }
+        def save(newoptions = {})
+          options = attributes.merge newoptions
+          options.merge! service_defaults
 
           if self.loaded then
             service.update_pool( options )
@@ -38,16 +31,20 @@ module Fog
         end
         
         def destroy
-          requires :poolid
-          
-          options = {
-            'poolid'     => poolid,
-          }
-
-          service.delete_pool( options )
+          service.delete_pool( service_defaults )
           true
         end
         
+        private
+        
+        def service_defaults
+          requires :poolid
+          
+          {
+            'poolid' => poolid,
+          }
+        end
+
       end
 
     end

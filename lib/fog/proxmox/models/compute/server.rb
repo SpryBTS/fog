@@ -148,7 +148,7 @@ module Fog
         end
 
         def ubc
-          service.ubc_server( service_defaults.merge options )
+          service.ubc_server( service_defaults )
         end
 
         # @param [Hash] options
@@ -158,11 +158,11 @@ module Fog
         end
 
         def mount
-          service.mount_server( service_defaults.merge options )
+          service.mount_server( service_defaults )
         end
 
         def umount
-          service.umount_server( service_defaults.merge options )
+          service.umount_server( service_defaults )
         end
 
         # @param [Hash] options
@@ -187,11 +187,12 @@ module Fog
           service.migrate_server( service_defaults.merge options )
         end
         
-        # @param [Hash] options
-        # :limit - integer
-        # :start - integer
+        def spiceproxy
+          service.spiceproxy_server( service_defaults )
+        end
+        
         def vncproxy
-          service.vncproxy_server( service_defaults.merge options )
+          service.vncproxy_server( service_defaults )
         end
         
         # @param [Hash] options
@@ -288,11 +289,11 @@ module Fog
           merge_attributes(newdata)
         end
         
-        def current_status
+        def stats
           options = service_defaults
-          data = service.get_server_status( options )
+          data = service.get_server_stats( options )
           merge_attributes( :status => data['status'] ) unless data['status'].nil?
-          data['status']
+          data
         end
         
         private

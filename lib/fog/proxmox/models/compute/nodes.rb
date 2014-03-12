@@ -10,11 +10,11 @@ module Fog
         model Fog::Compute::Proxmox::Node
 
         def all( options = {} )
-          load service.list_nodes( options )
+          load service.nodes_get( options )
         end
 
         def get(nodeid)
-          node = service.list_nodes( :filters => { :node => nodeid } ).first
+          node = service.nodes_node_get( 'node' => nodeid } ).first
           if node
             anode = new node
             return anode
