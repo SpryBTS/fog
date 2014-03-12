@@ -3,19 +3,22 @@ module Fog
     class Proxmox
       class Real
 
-        def get_snapshot_server(options={})
+        def server_snapshot_config_put(options={})
+          %w[ snapname ].each{ |a|
+            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
+          }
           options.merge!(
-            :method => :get,
-            :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/snapshot",
+            :method => :put,
+            :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/snapshot/#{options['snapname']}/config",
           )
-          %w[ node type vmid ].each { |a| options.delete( a ) }
+          %w[ node type vmid snapname ].each { |a| options.delete( a ) }
           request(options)
         end
 
       end
       
       class Mock
-        def get_snapshot_server(options={})
+        def server_snapshot_config_put(options={})
           Fog::Mock.not_implemented
         end
       end

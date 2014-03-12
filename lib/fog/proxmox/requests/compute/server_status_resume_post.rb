@@ -3,10 +3,10 @@ module Fog
     class Proxmox
       class Real
 
-        def resume_server(options={})
+        def server_status_resume_post(options={})
           options.merge!(
             :method => :post,
-            :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + "#{options['vmid']}" + '/status/resume',
+            :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/status/resume",
           )
           %w[ node type vmid ].each { |a| options.delete( a ) }
           request(options)
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def resume_server(options={})
+        def server_status_resume_post(options={})
           Fog::Mock.not_implemented
         end
       end

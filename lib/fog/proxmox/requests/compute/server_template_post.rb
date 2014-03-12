@@ -3,10 +3,10 @@ module Fog
     class Proxmox
       class Real
 
-        def template_server(options={})
+        def server_template_post(options={})
           options.merge!(
             :method => :post,
-            :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + "#{options['vmid']}" + '/template',
+            :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/template",
           )
           %w[ node type vmid ].each { |a| options.delete( a ) }
           request(options)
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def template_server(options={})
+        def server_template_post(options={})
           Fog::Mock.not_implemented
         end
       end

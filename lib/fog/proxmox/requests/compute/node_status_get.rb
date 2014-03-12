@@ -7,6 +7,7 @@ module Fog
           options.merge!(
             :command => "nodes/#{options['node']}/status"
           )
+          %w[ node ].each { |a| options.delete( a ) }
           request(options)
         end
 

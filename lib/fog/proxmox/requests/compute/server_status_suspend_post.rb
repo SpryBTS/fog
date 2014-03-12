@@ -3,10 +3,10 @@ module Fog
     class Proxmox
       class Real
 
-        def suspend_server(options={})
+        def server_status_suspend_post(options={})
           options.merge!(
             :method => :post,
-            :command => 'nodes/' + options['node'] + '/' + options['type'] + '/' + "#{options['vmid']}" + '/status/suspend',
+            :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/status/suspend",
           )
           %w[ node type vmid ].each { |a| options.delete( a ) }
           request(options)
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def suspend_server(options={})
+        def server_status_suspend_post(options={})
           Fog::Mock.not_implemented
         end
       end

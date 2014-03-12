@@ -10,6 +10,7 @@ module Fog
           options.merge!(
             :command => "nodes/#{options['node']}/rrd"
           )
+          %w[ node ].each { |a| options.delete( a ) }
           request(options)
         end
 

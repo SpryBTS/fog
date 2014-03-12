@@ -3,10 +3,10 @@ module Fog
     class Proxmox
       class Real
 
-        def snapshot_server(options={})
-          raise Fog::Compute::Proxmox::BadRequest.new('API command missing parameter node') unless node = options['node']
-          raise Fog::Compute::Proxmox::BadRequest.new('API command missing parameter type') unless type = options['type']
-          raise Fog::Compute::Proxmox::BadRequest.new('API command missing parameter vmid') unless vmid = options['vmid']
+        def server_snapshots_post(options={})
+          %w[ snapname ].each{ |a|
+            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
+          }
           options.merge!(
             :method => :post,
             :command => "nodes/#{node}/#{type}/#{vmid}/snapshot",
@@ -18,7 +18,7 @@ module Fog
       end
       
       class Mock
-        def get_snapshot_server(options={})
+        def server_snapshots_post(options={})
           Fog::Mock.not_implemented
         end
       end

@@ -11,6 +11,7 @@ module Fog
             :method => :post,
             :command => "nodes/#{options['node']}/status"
           )
+          %w[ node ].each { |a| options.delete( a ) }
           request(options)
         end
 

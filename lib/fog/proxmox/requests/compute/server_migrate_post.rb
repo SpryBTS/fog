@@ -4,6 +4,9 @@ module Fog
       class Real
 
         def server_migrate_post(options={})
+          %w[ target ].each{ |a|
+            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
+          }
           options.merge!(
             :method => :post,
             :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/migrate",

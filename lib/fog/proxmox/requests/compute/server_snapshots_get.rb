@@ -3,7 +3,7 @@ module Fog
     class Proxmox
       class Real
 
-        def get_snapshot_server(options={})
+        def server_snapshots_get(options={})
           options.merge!(
             :method => :get,
             :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/snapshot",
@@ -15,7 +15,7 @@ module Fog
       end
       
       class Mock
-        def get_snapshot_server(options={})
+        def server_snapshots_get(options={})
           Fog::Mock.not_implemented
         end
       end
