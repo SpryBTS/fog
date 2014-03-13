@@ -76,9 +76,7 @@ module Fog
 
       request :pools_get
       request :pools_post
-      request :pools_pool_get
-      request :pools_pool_put
-      request :pools_pool_delete
+      request :pools_pool
 
       request :create_realm
       request :delete_realm
@@ -100,71 +98,59 @@ module Fog
       request :update_hagroup
       request :list_hagroups
 
-      request :server_clone_post
-      request :server_config_get
-      request :server_config_post
-      request :server_config_put
+      request :server
+      request :server_clone
+      request :server_config
       request :server_delete
-      request :server_feature_get
-      request :server_get
+      request :server_feature
       request :server_initlog
-      request :server_migrate_post
-      request :server_monitor_post
-      request :server_move_disk_post
-      request :server_resize_put
-      request :server_rrd_get
-      request :server_rrddata_get
-      request :server_sendkey_put
-      request :server_snapshots_get
-      request :server_snapshots_post
-      request :server_snapshots_snapshot_config_get
-      request :server_snapshots_snapshot_config_put
-      request :server_snapshots_snapshot_delete
-      request :server_snapshots_snapshot_get
-      request :server_snapshots_snapshot_rollback_post
-      request :server_spiceproxy_post
-      request :server_status_current_get
-      request :server_status_mount_post
-      request :server_status_reset_post
-      request :server_status_resume_post
-      request :server_status_shutdown_post
-      request :server_status_start_post
-      request :server_status_stop_post
-      request :server_status_suspend_post
-      request :server_status_ubc_get
-      request :server_status_umount_post
-      request :server_template_post
-      request :server_unlink_put
-      request :server_vncproxy_post
-      request :servers_get
-      request :servers_post
+      request :server_migrate
+      request :server_monitor
+      request :server_move_disk
+      request :server_resize
+      request :server_rrd
+      request :server_rrddata
+      request :server_sendkey
+      request :server_snapshots
+      request :server_snapshots_snapshot
+      request :server_snapshots_snapshot_config
+      request :server_snapshots_snapshot_rollback
+      request :server_spiceproxy
+      request :server_status_current
+      request :server_status_mount
+      request :server_status_reset
+      request :server_status_resume
+      request :server_status_shutdown
+      request :server_status_start
+      request :server_status_stop
+      request :server_status_suspend
+      request :server_status_ubc
+      request :server_status_umount
+      request :server_template
+      request :server_unlink
+      request :server_vncproxy
+      request :servers
 
-      request :nodes_get
-      request :node_aplinfo_get
-      request :node_aplinfo_post
-      request :node_bootlog_get
-      request :node_dns_get
-      request :node_dns_post
-      request :node_execute_post
-      request :node_get
-      request :node_netstat_get
-      request :node_rrd_get
-      request :node_rrddata_get
-      request :node_spiceshell_post
-      request :node_startall_post
-      request :node_status_get
-      request :node_status_post
-      request :node_stopall_post
-      request :node_subscription_get
-      request :node_subscription_post
-      request :node_subscription_put
-      request :node_syslog_get
-      request :node_time_get
-      request :node_time_put
-      request :node_ubcfailcnt_get
-      request :node_version_get
-      request :node_vncshell_post
-      request :node_vzdump_post
+      request :nodes
+      request :node_aplinfo
+      request :node_bootlog
+      request :node_dns
+      request :node_execute
+      request :node
+      request :node_netstat
+      request :node_rrd
+      request :node_rrddata
+      request :node_spiceshell
+      request :node_startall
+      request :node_status
+      request :node_stopall
+      request :node_subscription
+      request :node_syslog
+      request :node_time
+      request :node_ubcfailcnt
+      request :node_version
+      request :node_vncshell
+      request :node_vzdump
       
       request :create_store
       request :delete_store
