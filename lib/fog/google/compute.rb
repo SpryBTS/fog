@@ -1,5 +1,4 @@
 require 'fog/google/core'
-require 'fog/compute'
 
 module Fog
   module Compute
@@ -845,7 +844,9 @@ module Fog
 
         def initialize(options)
           base_url = 'https://www.googleapis.com/compute/'
-          api_scope_url = 'https://www.googleapis.com/auth/compute'
+          # The devstorage scope is needed to be able to insert images
+          # devstorage.read_only scope is not sufficient like you'd hope
+          api_scope_url = 'https://www.googleapis.com/auth/compute https://www.googleapis.com/auth/devstorage.read_write'
           shared_initialize(options)
 
           google_client_email = options[:google_client_email]
@@ -854,8 +855,9 @@ module Fog
           # NOTE: loaded here to avoid requiring this as a core Fog dependency
           begin
             require 'google/api_client'
-          rescue LoadError
+          rescue LoadError => error
             Fog::Logger.warning("Please install the google-api-client gem before using this provider.")
+            raise error
           end
           key = ::Google::APIClient::KeyUtils.load_from_pkcs12(File.expand_path(options[:google_key_location]), 'notasecret')
 
