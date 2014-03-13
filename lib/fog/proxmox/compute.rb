@@ -74,9 +74,8 @@ module Fog
       request :update_group
       request :list_groups
 
-      request :pools_get
-      request :pools_post
-      request :pools_pool
+      request :pools
+      request :pool
 
       request :create_realm
       request :delete_realm
@@ -131,12 +130,14 @@ module Fog
       request :server_vncproxy
       request :servers
 
-      request :nodes
+      request :node
       request :node_aplinfo
+      request :node_apt_changelog
+      request :node_apt_update
+      request :node_apt
       request :node_bootlog
       request :node_dns
       request :node_execute
-      request :node
       request :node_netstat
       request :node_rrd
       request :node_rrddata
@@ -151,6 +152,7 @@ module Fog
       request :node_version
       request :node_vncshell
       request :node_vzdump
+      request :nodes
       
       request :create_store
       request :delete_store

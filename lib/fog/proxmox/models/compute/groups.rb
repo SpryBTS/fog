@@ -18,10 +18,10 @@ module Fog
           load service.access_groups( :filters => filters )
         end
 
-        def get(groupid)
+        def get( groupid )
           group = service.access_groups( :groupid => groupid )
           if group
-            agroup = new(group)
+            agroup = new( group )
             agroup.groupid = groupid
             agroup.loaded = true
             return agroup
