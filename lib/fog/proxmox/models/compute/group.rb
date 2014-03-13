@@ -27,20 +27,20 @@ module Fog
           }
 
           if self.loaded then
-            service.access_group( options.merge( :method => :put ) )
+            service.access_group( { :method => :put }.merge options )
           else
-            service.access_groups( options.merge( :method => :post ) )
+            service.access_groups( { :method => :post }.merge options )
           end
           true
         end
         
         def destroy
-          requires :groupid
+s          requires :groupid
           
           options = {
             'groupid' => groupid,
           }
-          service.delete_group( options.merge( :method => :delete ) )
+          service.delete_group( { :method => :delete }.merge options )
           true
         end
         

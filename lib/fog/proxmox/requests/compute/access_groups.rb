@@ -13,16 +13,6 @@ module Fog
           request(options)
         end
 
-
-        %w[ key ].each{ |a|
-          raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-        } if options[:method] = :put
-        options.merge!( :command => "nodes/#{options['node']}/subscription" )
-        %w[ node ].each { |a| options.delete( a ) }
-        request(options)
-
-
-
       end
       
       class Mock

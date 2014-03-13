@@ -3,22 +3,20 @@ module Fog
     class Proxmox
       class Real
 
-        def create_acl(options={})
-          options.merge!(
-            :method => :put, 
-            :command => 'access/acl',
-          )
+        def access_group(options={})
+          options.merge!( :command => "access/groups/#{options['groupid']}" )
+          %w[ groupid ].each { |a| options.delete( a ) }
           request(options)
         end
 
       end
       
       class Mock
-        def create_acl(options={})
+        def access_group(options={})
           Fog::Mock.not_implemented
         end
       end
-        
+
     end
   end
 end
