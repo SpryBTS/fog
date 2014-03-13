@@ -22,12 +22,14 @@ module Fog
           raise Fog::Compute::Proxmox::NotImplemented.new('Destroying a node is not supported.')
         end
 
-        def aplinfo
-          service.nodes_node_aplinfo_get( service_defaults )
-        end
         def aplinfo( options = {} )
-          requires :storage
-          service.nodes_node_aplinfo_post( service_defaults.merge options )
+          if options.empty?
+            service.nodes_node_aplinfo_get( service_defaults )
+          else
+            requires :storage
+            options[:method] = :post
+            service.nodes_node_aplinfo_post( service_defaults.merge options )
+          end
         end
 
         def bootlog

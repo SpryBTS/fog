@@ -264,11 +264,12 @@ module Fog
         # :description - string
         # :freezefs - boolean
         # :vmstate - boolean
-        def snapshot(options = {})
-          service.snapshot_server( service_defaults.merge options )
-        end
         def snapshot
-          service.get_snapshots_server( service_defaults )
+          if options.empty?
+            service.get_snapshots_server( service_defaults )
+          else
+            service.snapshot_server( service_defaults.merge options )
+          end
         end
 
         def config

@@ -14,7 +14,7 @@ module Fog
         end
 
         def get(nodeid)
-          node = service.nodes_node_get( 'node' => nodeid } ).first
+          node = service.nodes_node_get( 'node' => nodeid ).first
           if node
             anode = new node
             return anode

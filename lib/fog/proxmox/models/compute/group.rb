@@ -22,14 +22,14 @@ module Fog
           requires :groupid
 
           options = {
-            'groupid'     => groupid,
-            'comment'     => comment,
+            'groupid' => groupid,
+            'comment' => comment,
           }
 
           if self.loaded then
-            service.update_group( options )
+            service.access_group( options.merge( :method => :put ) )
           else
-            service.create_group( options )
+            service.access_groups( options.merge( :method => :post ) )
           end
           true
         end
@@ -38,10 +38,9 @@ module Fog
           requires :groupid
           
           options = {
-            'groupid'     => groupid,
+            'groupid' => groupid,
           }
-
-          service.delete_group( options )
+          service.delete_group( options.merge( :method => :delete ) )
           true
         end
         
