@@ -4,7 +4,7 @@ module Fog
       class Real
 
         def node_ceph_osd_in(options={})
-          %w[ osdid ].each{ |a|
+          %w[ node osdid ].each{ |a|
             raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
           }
           options.merge!( :command => "nodes/#{options['node']}/ceph/osd/#{options['osdid']}/in" )

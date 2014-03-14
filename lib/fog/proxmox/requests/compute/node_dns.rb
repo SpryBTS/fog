@@ -4,7 +4,7 @@ module Fog
       class Real
 
         def node_dns(options={})
-          %w[ search ].each{ |a|
+          %w[ node search ].each{ |a|
             raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
             } if options[:method] == :post
           options.merge!( :command => "nodes/#{options['node']}/dns" )

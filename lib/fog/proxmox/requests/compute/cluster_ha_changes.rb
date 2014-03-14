@@ -3,18 +3,15 @@ module Fog
     class Proxmox
       class Real
 
-        def create_hagroup(options={})
-          options.merge!(
-            :method => :post,
-            :command => 'cluster/ha/groups',
-          )
+        def cluster_ha_changes(options={})
+          options.merge!( :command => "cluster/ha/changes" )
           request(options)
         end
 
       end
-
+      
       class Mock
-        def create_hagroup(options={})
+        def cluster_ha_changes(options={})
           Fog::Mock.not_implemented
         end
       end

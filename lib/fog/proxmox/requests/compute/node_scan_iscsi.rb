@@ -4,7 +4,7 @@ module Fog
       class Real
 
         def node_scan_iscsi(options={})
-          %w[ portal ].each{ |a|
+          %w[ node portal ].each{ |a|
             raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
           }
           options.merge!( :command => "nodes/#{options['node']}/scan/iscsi" )

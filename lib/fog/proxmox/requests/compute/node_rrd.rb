@@ -4,7 +4,7 @@ module Fog
       class Real
 
         def node_rrd(options={})
-          %w[ ds timeframe ].each{ |a|
+          %w[ ds node timeframe ].each{ |a|
             raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
           }
           options.merge!( :command => "nodes/#{options['node']}/rrd" )

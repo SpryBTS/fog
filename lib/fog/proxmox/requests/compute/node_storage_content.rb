@@ -4,7 +4,7 @@ module Fog
       class Real
 
         def node_storage_content(options={})
-          %w[ filename size vmid ].each{ |a|
+          %w[ filename node size vmid ].each{ |a|
             raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
           } if options[:method] == :post
           %w[ storage ].each{ |a|

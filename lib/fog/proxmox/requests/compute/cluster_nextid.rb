@@ -3,19 +3,15 @@ module Fog
     class Proxmox
       class Real
 
-        def list_tasks(options={})
-            
-          options.merge!(
-            :command => "cluster/tasks"
-          )
-
+        def cluster_log(options={})
+          options.merge!( :command => "cluster/log" )
           request(options)
         end
 
       end
       
       class Mock
-        def list_tasks(options={})
+        def cluster_log(options={})
           Fog::Mock.not_implemented
         end
       end

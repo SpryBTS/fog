@@ -3,18 +3,15 @@ module Fog
     class Proxmox
       class Real
 
-        def create_store(options={})
-          options.merge!(
-            :method => :post,
-            :command => 'storage',
-          )
+        def cluster_ha_config(options={})
+          options.merge!( :command => "cluster/ha/config" )
           request(options)
         end
 
       end
-
+      
       class Mock
-        def create_store(options={})
+        def cluster_ha_config(options={})
           Fog::Mock.not_implemented
         end
       end

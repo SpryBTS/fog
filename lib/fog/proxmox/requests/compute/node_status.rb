@@ -4,7 +4,7 @@ module Fog
       class Real
 
         def nodes_node_status(options={})
-          %w[ command ].each{ |a|
+          %w[ node command ].each{ |a|
             raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
           } if options[:method] == :post
           options.merge!( :command => "nodes/#{options['node']}/status" )

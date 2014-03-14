@@ -4,7 +4,7 @@ module Fog
       class Real
 
         def node_scan_nfs(options={})
-          %w[ server ].each{ |a|
+          %w[ node server ].each{ |a|
             raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
           }
           options.merge!( :command => "nodes/#{options['node']}/scan/nfs" )
