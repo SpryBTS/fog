@@ -4,9 +4,6 @@ module Fog
       class Real
 
         def node_startall(options={})
-          %w[ node ].each{ |a|
-            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-          }
           options.merge!( :command => "nodes/#{options['node']}/startall" )
           %w[ node ].each { |a| options.delete( a ) }
           request(options)

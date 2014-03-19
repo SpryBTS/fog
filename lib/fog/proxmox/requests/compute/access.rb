@@ -3,16 +3,15 @@ module Fog
     class Proxmox
       class Real
 
-        def nodes_node_version(options={})
-          options.merge!( :command => "nodes/#{options['node']}/version" )
-          %w[ node ].each { |a| options.delete( a ) }
+        def access(options={})
+          options.merge!( :command => "access" )
           request(options)
         end
 
       end
       
       class Mock
-        def nodes_node_version(options={})
+        def access(options={})
           Fog::Mock.not_implemented
         end
       end

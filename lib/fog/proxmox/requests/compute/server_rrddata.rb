@@ -4,9 +4,6 @@ module Fog
       class Real
 
         def rrddata_server(options={})
-          %w[ timeframe ].each{ |a|
-            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-          }
           options.merge!( :command => "nodes/#{options['node']}/#{options['type']}/#{options['vmid']}/rrddata" )
           %w[ node type vmid ].each { |a| options.delete( a ) }
           request(options)

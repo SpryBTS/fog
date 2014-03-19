@@ -3,11 +3,8 @@ module Fog
     class Proxmox
       class Real
 
-        def cluster_backup(options={})
-          %w[ id ].each{ |a|
-            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-          }
-          options.merge!( :command => "access/domains/#{options['id']}" )
+        def cluster_ha_group(options={})
+          options.merge!( :command => "cluster/ha/groups/#{options['id']}" )
           %w[ id ].each { |a| options.delete( a ) }
           request(options)
         end
@@ -15,7 +12,7 @@ module Fog
       end
       
       class Mock
-        def cluster_backup(options={})
+        def cluster_ha_group(options={})
           Fog::Mock.not_implemented
         end
       end

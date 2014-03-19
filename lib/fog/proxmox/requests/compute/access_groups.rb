@@ -4,12 +4,7 @@ module Fog
       class Real
 
         def access_groups(options={})
-          command = "access/groups"
-          if ( options.include?(:groupid) )
-            command = command + '/' + options[:groupid]
-            options.delete(:groupid)
-          end
-          options.merge!( :command => command )
+          options.merge!( :command => "access/groups" )
           request(options)
         end
 

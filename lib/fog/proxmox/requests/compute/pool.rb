@@ -4,9 +4,6 @@ module Fog
       class Real
 
         def pool(options={})
-          %w[ poolid ].each{ |a|
-            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-          }
           options.merge!( :command => "pools/#{options['poolid']}" )
           options.delete( 'poolid' )
           request(options)

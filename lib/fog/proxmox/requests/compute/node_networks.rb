@@ -4,9 +4,6 @@ module Fog
       class Real
 
         def node_networks(options={})
-          %w[ node iface type ].each{ |a|
-            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-          } if options[:method] == :post
           options.merge!( :command => "nodes/#{options['node']}/network" )
           %w[ node ].each { |a| options.delete( a ) }
           request(options)

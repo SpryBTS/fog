@@ -3,15 +3,15 @@ module Fog
     class Proxmox
       class Real
 
-        def cluster(options={})
-          options.merge!( :command => "cluster" )
+        def access_roles(options={})
+          options.merge!( :command => "access/roles" )
           request(options)
         end
 
       end
       
       class Mock
-        def cluster(options={})
+        def access_roles(options={})
           Fog::Mock.not_implemented
         end
       end

@@ -4,9 +4,6 @@ module Fog
       class Real
 
         def storage(options={})
-          %w[ storage ].each{ |a|
-            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-          }
           options.merge!( :command => "storage/#{options['storage']}" )
           %w[ storage ].each { |a| options.delete( a ) }
           request(options)

@@ -15,11 +15,11 @@ module Fog
         end
         
         def all( filters = {} )
-          load service.list_backups( :filters => filters )
+          load service.cluster_backups( :filters => filters )
         end
 
         def get(id)
-          backup = service.list_backups( :id => id )
+          backup = service.cluster_backup( 'id' => id )
           if backup
             abackup = new(backup)
             abackup.loaded = true

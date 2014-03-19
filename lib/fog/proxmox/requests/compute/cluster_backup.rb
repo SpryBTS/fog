@@ -4,10 +4,7 @@ module Fog
       class Real
 
         def cluster_backup(options={})
-          %w[ id ].each{ |a|
-            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-          }
-          options.merge!( :command => "access/domains/#{options['id']}" )
+          options.merge!( :command => "cluster/backup/#{options['id']}" )
           %w[ id ].each { |a| options.delete( a ) }
           request(options)
         end

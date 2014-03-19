@@ -22,10 +22,6 @@ module Fog
 
       model_path 'fog/proxmox/models/compute'
       # access
-      # ACL access is a bit hard to model, requests should suffice.
-      # There is really no unique identity for each ACL.
-#      model       :acl
-#      collection  :acls
       model       :realm
       collection  :realms
       model       :group
@@ -61,46 +57,107 @@ module Fog
 
       request :action_generic
       
-      request :create_acl
-      request :list_acls
+      request :access_acl
+      request :access_domain
+      request :access_domains
+      request :access_group
+      request :access_groups
+      request :access_password
+      request :access_role
+      request :access_roles
+      request :access_ticket
+      request :access_user
+      request :access_users
+      request :access
 
-      request :create_backup
-      request :delete_backup
-      request :update_backup
-      request :list_backups
-
-      request :create_group
-      request :delete_group
-      request :update_group
-      request :list_groups
-
-      request :pools
-      request :pool
-
-      request :create_realm
-      request :delete_realm
-      request :update_realm
-      request :list_realms
-
-      request :create_role
-      request :delete_role
-      request :update_role
-      request :list_roles
-
-      request :create_user
-      request :delete_user
-      request :update_user
-      request :list_users
+      request :cluster_backup
+      request :cluster_backups
+      request :cluster_ha_changes
+      request :cluster_ha_config
+      request :cluster_ha_group
+      request :cluster_ha_groups
+      request :cluster_ha
+      request :cluster_log
+      request :cluster_nextid
+      request :cluster_options
+      request :cluster_resources
+      request :cluster_status
+      request :cluster_tasks
+      request :cluster
       
-      request :create_hagroup
-      request :delete_hagroup
-      request :update_hagroup
-      request :list_hagroups
+      request :node_aplinfo
+      request :node_apt_changelog
+      request :node_apt_update
+      request :node_apt
+      request :node_bootlog
+      request :node_ceph_config
+      request :node_ceph_crush
+      request :node_ceph_disks
+      request :node_ceph_init
+      request :node_ceph_log
+      request :node_ceph_mon
+      request :node_ceph_mons
+      request :node_ceph_osd_in
+      request :node_ceph_osd_out
+      request :node_ceph_osd
+      request :node_ceph_osds
+      request :node_ceph_pool
+      request :node_ceph_pools
+      request :node_ceph_start
+      request :node_ceph_status
+      request :node_ceph_stop
+      request :node_ceph
+      request :node_dns
+      request :node_execute
+      request :node_netstat
+      request :node_network
+      request :node_networks
+      request :node_rrd
+      request :node_rrddata
+      request :node_scan_glusterfs
+      request :node_scan_iscsi
+      request :node_scan_lvm
+      request :node_scan_nfs
+      request :node_scan_usb
+      request :node_scan
+      request :node_service_reload
+      request :node_service_restart
+      request :node_service_start
+      request :node_service_state
+      request :node_service_stop
+      request :node_service
+      request :node_services
+      request :node_spiceshell
+      request :node_startall
+      request :node_status
+      request :node_stopall
+      request :node_storage_content_volume
+      request :node_storage_content
+      request :node_storage_rrd
+      request :node_storage_rrddata
+      request :node_storage_status
+      request :node_storage_upload
+      request :node_storage
+      request :node_storages
+      request :node_subscription
+      request :node_syslog
+      request :node_task_log
+      request :node_task_status
+      request :node_task
+      request :node_tasks
+      request :node_time
+      request :node_ubcfailcnt
+      request :node_version
+      request :node_vncshell
+      request :node_vzdump
+      request :node
+      request :nodes
+      
+      request :pool
+      request :pools
 
-      request :server
       request :server_clone
       request :server_config
-      request :server_delete
       request :server_feature
       request :server_initlog
       request :server_migrate
@@ -110,10 +167,10 @@ module Fog
       request :server_rrd
       request :server_rrddata
       request :server_sendkey
+      request :server_snapshot_config
+      request :server_snapshot_rollback
+      request :server_snapshot
       request :server_snapshots
-      request :server_snapshots_snapshot
-      request :server_snapshots_snapshot_config
-      request :server_snapshots_snapshot_rollback
       request :server_spiceproxy
       request :server_status_current
       request :server_status_mount
@@ -128,40 +185,13 @@ module Fog
       request :server_template
       request :server_unlink
       request :server_vncproxy
+      request :server
       request :servers
 
-      request :node
-      request :node_aplinfo
-      request :node_apt_changelog
-      request :node_apt_update
-      request :node_apt
-      request :node_bootlog
-      request :node_dns
-      request :node_execute
-      request :node_netstat
-      request :node_rrd
-      request :node_rrddata
-      request :node_spiceshell
-      request :node_startall
-      request :node_status
-      request :node_stopall
-      request :node_subscription
-      request :node_syslog
-      request :node_time
-      request :node_ubcfailcnt
-      request :node_version
-      request :node_vncshell
-      request :node_vzdump
-      request :nodes
-      
-      request :create_store
-      request :delete_store
-      request :update_store
-      request :list_stores
+      request :storage
+      request :storages
 
-      request :list_logs
-      request :list_resources
-      request :list_tasks
+      request :version
 
       class Mock
 
@@ -263,7 +293,6 @@ module Fog
           response = Fog::JSON.decode(response.body)['data'] unless response.body.empty?
 
           # Filter response items
-          puts "DEBUG: "
           response.select! { |r|
             match = true
             filters.each_pair{ |k,v|
@@ -338,7 +367,6 @@ module Fog
 
           rescue Excon::Errors::HTTPStatusError => error
             error_code = error.response.status
-            puts "DEBUG error.repsonse: #{error.response.inspect}"
             error_response = Fog::JSON.decode(error.response.body)
             error_text = error_response['errors'] unless error_response['errors'].nil?
 

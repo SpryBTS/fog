@@ -4,9 +4,6 @@ module Fog
       class Real
 
         def node_service_state(options={})
-          %w[ node service ].each{ |a|
-            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-          }
           options.merge!( :command => "nodes/#{options['node']}/services/#{options['service']}/state" )
           %w[ node service ].each { |a| options.delete( a ) }
           request(options)

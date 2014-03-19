@@ -4,9 +4,6 @@ module Fog
       class Real
 
         def cluster_ha_groups(options={})
-          %w[ vmid ].each{ |a|
-            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-          } if options[:method] == :post
           options.merge!( :command => "cluster/ha/groups" )
           request(options)
         end

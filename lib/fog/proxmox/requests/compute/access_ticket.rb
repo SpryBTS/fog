@@ -3,15 +3,15 @@ module Fog
     class Proxmox
       class Real
 
-        def access_password(options={})
-          options.merge!( :command => 'access/password' )
+        def access_ticket(options={})
+          options.merge!( :command => 'access/ticket' )
           request(options)
         end
 
       end
       
       class Mock
-        def access_password(options={})
+        def access_ticket(options={})
           Fog::Mock.not_implemented
         end
       end

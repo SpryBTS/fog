@@ -4,9 +4,6 @@ module Fog
       class Real
 
         def node_storage_rrd(options={})
-          %w[ ds node storage timeframe ].each{ |a|
-            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-          }
           options.merge!( :command => "nodes/#{options['node']}/storage/#{options['storage']}/rrd" )
           %w[ node storage ].each { |a| options.delete( a ) }
           request(options)

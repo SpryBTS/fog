@@ -3,23 +3,15 @@ module Fog
     class Proxmox
       class Real
 
-        def access_domains(options={})
-          %w[ realm type ].each{ |a|
-            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-          } if options[:method] == :post          
-          command = "access/domains"
-          if ( options.include?(:realm) )
-            command = command + '/' + options[:realm]
-            options.delete(:realm)
-          end
-          options.merge!( :command => command )
+        def cluster(options={})
+          options.merge!( :command => "cluster" )
           request(options)
         end
 
       end
       
       class Mock
-        def access_domains(options={})
+        def cluster(options={})
           Fog::Mock.not_implemented
         end
       end

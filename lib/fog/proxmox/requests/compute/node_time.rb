@@ -4,9 +4,6 @@ module Fog
       class Real
 
         def nodes_time(options={})
-          %w[ node timezone ].each{ |a|
-            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-          } if options[:method] == :put
           options.merge!( :command => "nodes/#{options['node']}/time" )
           %w[ node ].each { |a| options.delete( a ) }
           request(options)

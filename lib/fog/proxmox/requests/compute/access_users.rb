@@ -4,15 +4,7 @@ module Fog
       class Real
 
         def access_users(options={})
-          %w[ userid ].each{ |a|
-            raise Fog::Compute::Proxmox::BadRequest.new("Required parameter #{a} is missing.") unless options.include?( a )
-          } if options[:method] == :post          
-          command = "access/users"
-          if ( options.include?(:userid) )
-            command = command + '/' + options[:userid]
-            options.delete(:userid)
-          end
-          options.merge!( :command => command )
+          options.merge!( :command => "access/users" )
           request(options)
         end
 

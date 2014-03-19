@@ -15,11 +15,11 @@ module Fog
         end
         
         def all( options = {} )
-          load service.list_hagroups( options )
+          load service.cluster_ha_groups( options )
         end
 
         def get( id )
-          hagroup = service.list_hagroups( :id => id )
+          hagroup = service.cluster_ha_group( 'id' => id )
           new (hagroup)
         rescue Fog::Errors::NotFound
           nil

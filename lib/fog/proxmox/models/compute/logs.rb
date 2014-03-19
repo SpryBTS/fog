@@ -10,11 +10,11 @@ module Fog
         model Fog::Compute::Proxmox::Log
 
         def all( options = {} )
-          load service.list_logs( options )
+          load service.cluster_log( options )
         end
 
         def get(uid)
-          log = service.list_logs( :filters => { :uid => uid } ).first
+          log = service.cluster_log( :filters => { :uid => uid } ).first
           if log
             alog = new log
             return alog

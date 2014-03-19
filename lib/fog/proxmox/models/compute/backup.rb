@@ -71,9 +71,9 @@ module Fog
           }
 
           if self.loaded then
-            service.update_backup( options )
+            service.cluster_backup( options.merge!( :method => :put ) )
           else
-            service.create_backup( options )
+            service.cluster_backups( options.merge!( :method => :post ) )
           end
           
           true
@@ -86,7 +86,7 @@ module Fog
             'id' => id,
           }
 
-          service.delete_backup( options )
+          service.cluster_backup( options.merge!( :method => :delete ) )
           true
         end
         
