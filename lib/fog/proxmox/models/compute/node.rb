@@ -45,6 +45,15 @@ module Fog
         def execute( options = {} )
           service.node_execute( options.merge!( service_defaults ) )
         end
+
+        def services
+          service.node_services( service_defaults )
+        end
+        
+        def service(  )
+          service.node_service( options.merge!( service_defaults ) )
+        end
+        
         private
         
         def service_defaults

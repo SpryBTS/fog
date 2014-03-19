@@ -27,11 +27,11 @@ module Fog
           }
 
           if self.loaded then
-            options.merge! ( {'id' => id} )
-            service.cluster_ha_group( options.merge! ( :method => :put ) )
+            options.merge!( 'id' => id )
+            service.cluster_ha_group( options.merge!( :method => :put ) )
           else
-            options.merge! ( {'vmid' => vmid} )
-            service.cluster_ha_groups( options.merge! ( :method => :post ) )
+            options.merge!( 'vmid' => vmid )
+            service.cluster_ha_groups( options.merge!( :method => :post ) )
           end
           true
         end
