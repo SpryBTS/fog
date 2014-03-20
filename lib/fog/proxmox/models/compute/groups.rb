@@ -19,7 +19,7 @@ module Fog
         end
 
         def get( groupid )
-          group = service.access_groups( 'groupid' => groupid )
+          group = service.access_group( 'groupid' => groupid )
           if group
             agroup = new( group )
             agroup.groupid = groupid
