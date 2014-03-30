@@ -6,8 +6,8 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name              = 'fog'
-  s.version           = '1.20.0'
-  s.date              = '2014-02-07'
+  s.version           = '1.21.0'
+  s.date              = '2014-03-18'
   s.rubyforge_project = 'fog'
 
   ## Make sure your summary is short. The description may be as long
@@ -41,16 +41,10 @@ Gem::Specification.new do |s|
 
   ## List your runtime dependencies here. Runtime dependencies are those
   ## that are needed for an end user to actually USE your code.
-  s.add_dependency("fog-core", "~> 1.21.0")
+  s.add_dependency("fog-core", "~> 1.21", ">= 1.21.1")
   s.add_dependency("fog-json")
 
-  s.add_dependency('builder')
-  s.add_dependency('excon', '~>0.31.0')
-  s.add_dependency('formatador', '~>0.2.0')
-  s.add_dependency('mime-types')
-  s.add_dependency('net-scp', '~>1.1')
-  s.add_dependency('net-ssh', '>=2.1.3')
-  s.add_dependency('nokogiri', '>=1.5.11')
+  s.add_dependency('nokogiri', '~> 1.5', '>= 1.5.11')
 
   # Modular providers
   s.add_dependency("fog-brightbox")
@@ -63,17 +57,16 @@ Gem::Specification.new do |s|
   s.add_development_dependency('rbvmomi')
   s.add_development_dependency('yard')
   s.add_development_dependency('thor')
-  s.add_development_dependency('rbovirt', '>=0.0.24')
-  s.add_development_dependency('shindo', '~>0.3.4')
+  s.add_development_dependency('rbovirt', '>= 0.0.24')
+  s.add_development_dependency('shindo', '~> 0.3.4')
   s.add_development_dependency('fission')
   s.add_development_dependency('pry')
-  s.add_development_dependency('google-api-client', '~>0.6.2')
-  s.add_development_dependency('unf')
+  s.add_development_dependency('google-api-client', '~> 0.6', '>= 0.6.2')
 
   if ENV["FOG_USE_LIBVIRT"]
     s.add_development_dependency('ruby-libvirt','~> 0.5.0')
   end
 
-  s.files = `git ls-files`.split("\n")
+  s.files = `git ls-files`.split("\n") - `git ls-files -- providers/`.split("\n")
   s.test_files = `git ls-files -- {spec,tests}/*`.split("\n")
 end
