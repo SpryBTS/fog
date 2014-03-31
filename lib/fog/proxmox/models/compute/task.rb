@@ -28,7 +28,7 @@ module Fog
             'node' => node
           }
 
-          service.delete_task( options )
+          service.call_delete_task( options )
           true
         end
 

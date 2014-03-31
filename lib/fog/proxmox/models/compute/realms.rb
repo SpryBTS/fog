@@ -15,11 +15,11 @@ module Fog
         end
         
         def all( filters = {} )
-          load service.list_realms( :filters => filters )
+          load service.call_access_domains( :filters => filters )
         end
 
         def get(realmid)
-          realm = service.list_realms( :realm => realmid )
+          realm = service.call_access_domain( :realm => realmid )
           if realm
             arealm = new realm
             arealm.realm = realmid

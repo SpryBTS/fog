@@ -10,7 +10,7 @@ module Fog
         model Fog::Compute::Proxmox::Resource
 
         def all( options = {} )
-          load service.list_resources( options )
+          load service.call_list_resources( options )
         end
 
         def get( id )

@@ -97,28 +97,28 @@ module Fog
           options.merge! service_defaults
 
           if digest.nil? then
-            service.create_server( options )
+            service.call_create_server( options )
           else
-            service.update_server( options )
+            service.call_update_server( options )
           end
         end
         
         # @param [Hash] options
         # :skiplock - boolean (qemu)
         def destroy(options = {})
-          service.delete_server( service_defaults.merge options )
+          service.call_delete_server( service_defaults.merge options )
         end
 
         # @param [Hash] options
         # :skiplock - boolean (qemu)
         def reset(options = {})
-          service.reset_server( service_defaults.merge options )
+          service.call_reset_server( service_defaults.merge options )
         end
 
         # @param [Hash] options
         # :skiplock - boolean (qemu)
         def resume(options = {})
-          service.resume_server( service_defaults.merge options )
+          service.call_resume_server( service_defaults.merge options )
         end
 
         # @param [Hash] options
@@ -127,7 +127,7 @@ module Fog
         # :skiplock - boolean (qemu)
         # :timeout - integer
         def shutdown(options = {})
-          service.shutdown_server( service_defaults.merge options )
+          service.call_shutdown_server( service_defaults.merge options )
         end
 
         # @param [Hash] options
@@ -135,7 +135,7 @@ module Fog
         # :skiplock - boolean (qemu)
         # :stateuri - string (qemu)
         def start(options = {})
-          service.start_server( service_defaults.merge options )
+          service.call_start_server( service_defaults.merge options )
         end
 
         # @param [Hash] options
@@ -144,25 +144,25 @@ module Fog
         # :skiplock - boolean (qemu)
         # :timeout - integer (qemu)
         def stop(options = {})
-          service.stop_server( service_defaults.merge options )
+          service.call_stop_server( service_defaults.merge options )
         end
 
         def ubc
-          service.ubc_server( service_defaults )
+          service.call_ubc_server( service_defaults )
         end
 
         # @param [Hash] options
         # :skiplock - boolean (qemu)
         def suspend(options = {})
-          service.suspend_server( service_defaults.merge options )
+          service.call_suspend_server( service_defaults.merge options )
         end
 
         def mount
-          service.mount_server( service_defaults )
+          service.call_mount_server( service_defaults )
         end
 
         def umount
-          service.umount_server( service_defaults )
+          service.call_umount_server( service_defaults )
         end
 
         # @param [Hash] options
@@ -176,7 +176,7 @@ module Fog
         # :storage - string
         # :target - string
         def clone(options = {})
-          service.clone_server( service_defaults.merge options )
+          service.call_clone_server( service_defaults.merge options )
         end
         
         # @param [Hash] options
@@ -184,22 +184,22 @@ module Fog
         # :online - boolean
         # :force  - boolean (qemu)
         def migrate(options = {})
-          service.migrate_server( service_defaults.merge options )
+          service.call_migrate_server( service_defaults.merge options )
         end
         
         def spiceproxy
-          service.spiceproxy_server( service_defaults )
+          service.call_spiceproxy_server( service_defaults )
         end
         
         def vncproxy
-          service.vncproxy_server( service_defaults )
+          service.call_vncproxy_server( service_defaults )
         end
         
         # @param [Hash] options
         # :limit - integer
         # :start - integer
         def initlog(options = {})
-          service.initlog_server( service_defaults.merge options )
+          service.call_initlog_server( service_defaults.merge options )
         end
         
         # @param [Hash] options
@@ -207,27 +207,27 @@ module Fog
         # :timeframe - enum
         # :cf - enum
         def rrd(options = {})
-          service.rrd_server( service_defaults.merge options )
+          service.call_rrd_server( service_defaults.merge options )
         end
         
         # @param [Hash] options
         # :timeframe - enum
         # :cf - enum
         def rrddata(options = {})
-          service.rrddata_server( service_defaults.merge options )
+          service.call_rrddata_server( service_defaults.merge options )
         end
         
         # @param [Hash] options
         # :feature - enum
         # :snapname - string
         def feature(options = {})
-          service.feature_server( service_defaults.merge options )
+          service.call_feature_server( service_defaults.merge options )
         end
         
         # @param [Hash] options
         # :command - string
         def monitor(options = {})
-          service.monitor_server( service_defaults.merge options )
+          service.call_monitor_server( service_defaults.merge options )
         end
         
         # @param [Hash] options
@@ -236,27 +236,27 @@ module Fog
         # :digest - string
         # :skiplock - boolean
         def resize(options = {})
-          service.resize_server( service_defaults.merge options )
+          service.call_resize_server( service_defaults.merge options )
         end
         
         # @param [Hash] options
         # :key - string
         # :skiplock - boolean
         def sendkey(options = {})
-          service.sendkey_server( service_defaults.merge options )
+          service.call_sendkey_server( service_defaults.merge options )
         end
         
         # @param [Hash] options
         # :disk - enum
         def create_template(options = {})
-          service.template_server( service_defaults.merge options )
+          service.call_template_server( service_defaults.merge options )
         end
         
         # @param [Hash] options
         # :idlist - string
         # :force - boolean
         def unlink(options = {})
-          service.unlink_server( service_defaults.merge options )
+          service.call_unlink_server( service_defaults.merge options )
         end
         
         # @param [Hash] options
@@ -266,16 +266,16 @@ module Fog
         # :vmstate - boolean
         def snapshot
           if options.empty?
-            service.get_snapshots_server( service_defaults )
+            service.call_get_snapshots_server( service_defaults )
           else
-            service.snapshot_server( service_defaults.merge options )
+            service.call_snapshot_server( service_defaults.merge options )
           end
         end
 
         def config
           options = service_defaults
 
-          data = service.get_server_config( options )
+          data = service.call_get_server_config( options )
           # Decode received attributes for mulitple devices into arrays
           newdata = {}
           data.each{ |a, v|
@@ -292,7 +292,7 @@ module Fog
         
         def stats
           options = service_defaults
-          data = service.get_server_stats( options )
+          data = service.call_get_server_stats( options )
           merge_attributes( :status => data['status'] ) unless data['status'].nil?
           data
         end

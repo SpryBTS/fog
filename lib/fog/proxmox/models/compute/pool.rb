@@ -23,15 +23,15 @@ module Fog
           options.merge! service_defaults
 
           if self.loaded then
-            service.update_pool( options )
+            service.call_pool( options )
           else
-            service.create_pool( options )
+            service.call_pool( options )
           end
           true
         end
         
         def destroy
-          service.delete_pool( service_defaults )
+          service.call_delete_pool( service_defaults )
           true
         end
         

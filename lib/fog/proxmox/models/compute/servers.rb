@@ -10,11 +10,11 @@ module Fog
         model Fog::Compute::Proxmox::Server
 
         def all(options = {})
-          load service.list_servers( options )
+          load service.call_list_servers( options )
         end
 
         def get(vmid)
-          vm = service.list_servers( :vmid => vmid ).first
+          vm = service.call_list_servers( :vmid => vmid ).first
           if vm
             # Remove attributes that conflict
             %w[ disk netout maxdisk maxmem diskread template cpu netin diskwrite mem ].each { |a| vm.delete( a ) }

@@ -27,9 +27,9 @@ module Fog
           }
 
           if self.loaded then
-            service.access_group( options.merge!(  :method => :put ) )
+            service.call_access_group( options.merge!(  :method => :put ) )
           else
-            service.access_groups( options.merge!( :method => :post ) )
+            service.call_access_groups( options.merge!( :method => :post ) )
           end
           true
         end
@@ -40,7 +40,7 @@ module Fog
           options = {
             'groupid' => groupid,
           }
-          service.access_group( options.merge!( :method => :delete ) )
+          service.call_access_group( options.merge!( :method => :delete ) )
           true
         end
         

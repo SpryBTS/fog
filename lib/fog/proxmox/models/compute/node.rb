@@ -24,34 +24,34 @@ module Fog
 
         def aplinfo( options = {} )
           if options.empty?
-            service.node_aplinfo( service_defaults )
+            service.call_node_aplinfo( service_defaults )
           else
             requires :storage
             options[:method] = :post
-            service.node_aplinfo( options.merge!( service_defaults ) )
+            service.call_node_aplinfo( options.merge!( service_defaults ) )
           end
         end
 
         def bootlog
-          service.node_bootlog( service_defaults )
+          service.call_node_bootlog( service_defaults )
         end
         
         def dns( options = {} )
           options.merge!( service_defaults )
           options.merge!( :method => :put ) unless options.empty?
-          service.node_dns( options )
+          service.call_node_dns( options )
         end
           
         def execute( options = {} )
-          service.node_execute( options.merge!( service_defaults ) )
+          service.call_node_execute( options.merge!( service_defaults ) )
         end
 
         def services
-          service.node_services( service_defaults )
+          service.call_node_services( service_defaults )
         end
         
-        def service(  )
-          service.node_service( options.merge!( service_defaults ) )
+        def service( )
+          service.call_node_service( options.merge!( service_defaults ) )
         end
         
         private

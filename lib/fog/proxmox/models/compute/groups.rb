@@ -15,11 +15,11 @@ module Fog
         end
         
         def all( filters = {} )
-          load service.access_groups( :filters => filters )
+          load service.call_access_groups( :filters => filters )
         end
 
         def get( groupid )
-          group = service.access_group( 'groupid' => groupid )
+          group = service.call_access_group( 'groupid' => groupid )
           if group
             agroup = new( group )
             agroup.groupid = groupid

@@ -41,9 +41,9 @@ module Fog
           }
 
           if self.loaded then
-            service.update_user( options )
+            service.call_update_user( options )
           else
-            service.create_user( options )
+            service.call_create_user( options )
           end
           true
         end
@@ -55,7 +55,7 @@ module Fog
             'userid'     => userid,
           }
 
-          service.delete_role( options )
+          service.call_delete_role( options )
           true
         end
         

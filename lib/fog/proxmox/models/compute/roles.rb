@@ -15,11 +15,11 @@ module Fog
         end
         
         def all( filters = {} )
-          load service.list_roles( :filters => filters )
+          load service.call_list_roles( :filters => filters )
         end
 
         def get(roleid)
-          role = service.list_roles( :filters => { :roleid => roleid } ).first
+          role = service.call_list_roles( :filters => { :roleid => roleid } ).first
           if role
             arole = new role
             arole.roleid = roleid

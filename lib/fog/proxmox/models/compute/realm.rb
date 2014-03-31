@@ -44,10 +44,10 @@ module Fog
           }
 
           if self.loaded then
-            service.update_realm( options )
+            service.call_update_realm( options )
           else
             options['type'] = type 
-            service.create_realm( options )
+            service.call_create_realm( options )
           end
           true
         end
@@ -59,7 +59,7 @@ module Fog
             'realm' => realm,
           }
 
-          service.delete_realm( options )
+          service.call_delete_realm( options )
           true
         end
         

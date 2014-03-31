@@ -10,11 +10,11 @@ module Fog
         model Fog::Compute::Proxmox::Pool
 
         def all( options = {} )
-          load service.list_pools( options )
+          load service.call_pools( options )
         end
 
         def get(poolid)
-          pool = service.list_pools( :poolid => poolid )
+          pool = service.call_pool( :poolid => poolid )
           if pool
             apool = new(pool)
             apool.poolid = poolid

@@ -22,27 +22,25 @@ module Fog
           requires :privs if self.loaded
 
           options = {
-            'roleid'     => roleid,
-            'append'     => append,
-            'privs'      => privs,
+            'roleid' => roleid,
+            'append' => append,
+            'privs'  => privs,
           }
 
           if self.loaded then
-            service.update_role( options )
+            service.call_update_role( options )
           else
-            service.create_role( options )
+            service.call_create_role( options )
           end
           true
         end
         
         def destroy
           requires :roleid
-          
           options = {
-            'roleid'     => roleid,
+              'roleid' => roleid
           }
-
-          service.delete_role( options )
+          service.call_delete_role( options )
           true
         end
 

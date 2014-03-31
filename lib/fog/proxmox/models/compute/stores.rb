@@ -10,11 +10,11 @@ module Fog
         model Fog::Compute::Proxmox::Store
 
         def all( options = {} )
-          load service.list_stores( options )
+          load service.call_list_stores( options )
         end
 
         def get(store)
-          store = service.list_stores( :storage => store )
+          store = service.call_list_stores( :storage => store )
           if store
             astore = new(store)
             astore.loaded = true

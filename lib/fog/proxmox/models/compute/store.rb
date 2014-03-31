@@ -63,7 +63,7 @@ module Fog
               'digest'     => digest,
             }
 
-            service.update_store( options )
+            service.call_update_store( options )
           else
             requires :type
 
@@ -82,7 +82,7 @@ module Fog
               'vgname'        => vgname,
             }
 
-            service.create_store( options )
+            service.call_create_store( options )
           end
           true
         end
@@ -94,7 +94,7 @@ module Fog
             'storage'     => storage,
           }
 
-          service.delete_store( options )
+          service.call_delete_store( options )
           true
         end
    

@@ -15,11 +15,11 @@ module Fog
         end
         
         def all( filters = {} )
-          load service.list_users( :filters => filters )
+          load service.call_list_users( :filters => filters )
         end
 
         def get(userid)
-          user = service.list_users( :userid => userid )
+          user = service.call_list_users( :userid => userid )
           if user
             auser = new user
             auser.userid = userid

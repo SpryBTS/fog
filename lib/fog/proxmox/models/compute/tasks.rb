@@ -10,11 +10,11 @@ module Fog
         model Fog::Compute::Proxmox::Task
 
         def all( options = {} )
-          load service.list_tasks( options )
+          load service.call_list_tasks( options )
         end
 
         def get(upid)
-          task = service.list_tasks( :filters => { :upid => upid } ).first
+          task = service.call_list_tasks( :filters => { :upid => upid } ).first
           if task
             atask = new task
             return atask
