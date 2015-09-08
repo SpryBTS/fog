@@ -2,7 +2,6 @@ class Glesys
   module Compute
     module Formats
       module Servers
-
         LIST = {
           'debug' => {
             'input' => Array
@@ -29,7 +28,6 @@ class Glesys
           'server' => {
             'managedhosting'  => String,
             'cost'            => {
-              'amount'      =>  Float,
               'timeperiod'  => String,
               'currency'    => String
             },
@@ -38,13 +36,14 @@ class Glesys
             'memorysize'    => Integer,
             'cpucores'      => Integer,
             'transfer'      => Integer,
+            'bandwidth'     => Integer,
             'templatename'  => String,
             'iplist'        =>  [{
               'cost'      => Integer,
               'version'   => Fog::Nullable::Integer,
               'ipaddress' => Fog::Nullable::String,
               'currency'  => String
-            }], 
+            }],
             'description' => String,
             'hostname'    => String,
             'disksize'    => Integer,
@@ -80,7 +79,20 @@ class Glesys
               'memorysize'    => String,
               'cpucores'      => String,
               'transfer'      => String,
+              'bandwidth'     => String,
               'description'   => String
+            }
+          }
+        )
+
+        EDIT = DETAILS.merge(
+          'debug' => {
+            'input' => {
+              'serverid'      => Fog::Nullable::String,
+              'disksize'      => String,
+              'memorysize'    => String,
+              'cpucores'      => String,
+              'bandwidth'     => String
             }
           }
         )
@@ -114,7 +126,7 @@ class Glesys
               'unit'  => Fog::Nullable::String
             },
             'cpu'       => {
-              'usage' => Fog::Nullable::Integer,
+              'usage' => Fog::Nullable::Float,
               'max'   => Fog::Nullable::Integer,
               'unit'  => Fog::Nullable::String
             },
@@ -144,10 +156,8 @@ class Glesys
             'text'      => String
           }
         }
-
       end
       module Ips
-
         IPLIST = {
           'debug' => {
             'input' => []
@@ -229,10 +239,61 @@ class Glesys
             'text'      => String
           }
         }
-
+      end
+      module SshKeys
+        ADD = {
+          'debug' => {
+            'input' => {
+              'sshkey'      => String,
+              'description' => String
+            }
+          },
+          'sshkey' => {
+            'id'          => Integer,
+            'account'     => String,
+            'description' => String,
+            'data'        => String
+          },
+          'status' => {
+            'timestamp'     => String,
+            'code'          => Integer,
+            'text'          => String,
+            'transactionid' => Fog::Nullable::String
+          }
+        }
+        REMOVE = {
+          'debug' => {
+            'input' => {
+              'sshkeyids' => String,
+            }
+          },
+          'status' => {
+            'timestamp'     => String,
+            'code'          => Integer,
+            'text'          => String,
+            'transactionid' => Fog::Nullable::String
+          }
+        }
+        LIST = {
+          'debug' => {
+            'input' => []
+          },
+          'sshkeys' => [
+            {
+              'id' => Integer,
+              'account' => String,
+              'description' => String,
+              'data' => String,
+            }
+          ],
+          'status' => {
+            'timestamp' => String,
+            'code'      => Integer,
+            'text'      => String
+          }
+        }
       end
       module Templates
-
         LIST = {
           'debug' => {
             'input' => []
@@ -259,7 +320,6 @@ class Glesys
             'text'      => String
           }
         }
-
       end
     end
   end

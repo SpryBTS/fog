@@ -1,11 +1,10 @@
-require 'fog/core/collection'
+require 'fog/openstack/models/collection'
 require 'fog/openstack/models/network/lb_vip'
 
 module Fog
   module Network
     class OpenStack
-      class LbVips < Fog::Collection
-
+      class LbVips < Fog::OpenStack::Collection
         attribute :filters
 
         model Fog::Network::OpenStack::LbVip
@@ -15,9 +14,9 @@ module Fog
           super
         end
 
-        def all(filters = filters)
-          self.filters = filters
-          load(service.list_lb_vips(filters).body['vips'])
+        def all(filters_arg = filters)
+          filters = filters_arg
+          load_response(service.list_lb_vips(filters), 'vips')
         end
 
         def get(vip_id)
@@ -27,7 +26,6 @@ module Fog
         rescue Fog::Network::OpenStack::NotFound
           nil
         end
-
       end
     end
   end

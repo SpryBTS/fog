@@ -4,9 +4,7 @@ require 'fog/hp/models/network/security_group'
 module Fog
   module HP
     class Network
-
       class SecurityGroups < Fog::Collection
-
         attribute :filters
 
         model Fog::HP::Network::SecurityGroup
@@ -16,8 +14,8 @@ module Fog
           super
         end
 
-        def all(filters = filters)
-          self.filters = filters
+        def all(filters_arg = filters)
+          filters = filters_arg
           non_aliased_filters = Fog::HP.convert_aliased_attributes_to_original(self.model, filters)
           load(service.list_security_groups(non_aliased_filters).body['security_groups'])
         end
@@ -29,7 +27,6 @@ module Fog
         rescue Fog::HP::Network::NotFound
           nil
         end
-
       end
     end
   end

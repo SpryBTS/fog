@@ -1,9 +1,9 @@
-require 'fog/core/model'
+require 'fog/openstack/models/model'
 
 module Fog
   module Network
     class OpenStack
-      class FloatingIp < Fog::Model
+      class FloatingIp < Fog::OpenStack::Model
         identity :id
 
         attribute :floating_network_id
@@ -12,25 +12,14 @@ module Fog
         attribute :fixed_ip_address
         attribute :floating_ip_address
 
-
-
-
-
-
         def initialize(attributes)
           @connection = attributes[:connection]
           super
         end
 
-        def save
-          requires :floating_network_id
-          identity ? update : create
-        end
-
         def create
           requires :floating_network_id
           merge_attributes(service.create_floating_ip(self.floating_network_id,
-
 
                                                     self.attributes).body['floatingip'])
           self
@@ -45,7 +34,6 @@ module Fog
           service.delete_floating_ip(self.id)
           true
         end
-
       end
     end
   end

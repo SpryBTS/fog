@@ -3,7 +3,6 @@ require 'fog/glesys/core'
 module Fog
   module Compute
     class Glesys < Fog::Service
-
       requires :glesys_username, :glesys_api_key
 
       API_URL = "https://api.glesys.com"
@@ -15,11 +14,14 @@ module Fog
       model       :template
       collection  :ips
       model       :ip
+      collection  :ssh_keys
+      model       :ssh_key
 
       request_path 'fog/glesys/requests/compute'
 
       # Server
       request :create
+      request :edit
       request :destroy
       request :list_servers
       request :server_details
@@ -40,9 +42,12 @@ module Fog
       request :ip_add
       request :ip_remove
 
+      # SSH keys
+      request :ssh_key_list
+      request :ssh_key_add
+      request :ssh_key_remove
 
       class Mock
-
         def initialize(options={})
           @api_url            = options[:glesys_api_url] || API_URL
           @glesys_username    = options[:glesys_username]
@@ -66,11 +71,9 @@ module Fog
         def reset_data
           self.class.reset
         end
-
       end
 
       class Real
-
         def initialize(options)
           require 'base64'
 
@@ -83,7 +86,6 @@ module Fog
         end
 
         def request(method_name, options = {})
-
           options.merge!( {:format => 'json'})
 
           begin
@@ -126,11 +128,9 @@ module Fog
         end
 
         def urlencode(hash)
-          hash.to_a.collect! { |k, v| "#{k}=#{v.to_s}" }.join("&")
+          hash.to_a.map! { |k, v| "#{k}=#{CGI.escape(v.to_s)}" }.join("&")
         end
-
       end
-
     end
   end
 end

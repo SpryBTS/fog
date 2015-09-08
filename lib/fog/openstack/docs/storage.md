@@ -268,6 +268,15 @@ directory.destroy
 
 **Note**: Directory must be empty before it can be deleted.
 
+
+## Directory URL
+
+To get a directory's URL:
+
+```ruby
+directory.public_url
+```
+
 ## List Files
 
 To list files in a directory:
@@ -327,7 +336,7 @@ Swift requires files larger than 5 GB (the Swift default limit) to be uploaded i
 	SEGMENT_LIMIT = 5368709119.0  # 5GB -1
 	BUFFER_SIZE = 1024 * 1024 # 1MB
 
-	File.open(file_name) do |f|
+	File.open(file_name) do |file|
 	  segment = 0
 	  until file.eof?
 	    segment += 1
@@ -349,12 +358,6 @@ Swift requires files larger than 5 GB (the Swift default limit) to be uploaded i
 
 	# write manifest file
 	service.put_object_manifest("my_container", "large_file", 'X-Object-Manifest' => "my_container/large_file/")
-
-    # write manifest file
-    service.put_object_manifest("my_container", "large_file", 'X-Object-Manifest' => "my_container/large_file/")
-
-    # write manifest file
-    service.put_object_manifest("my_container", "large_file", 'X-Object-Manifest' => "my_container/large_file/")
 ```
 
 Segmented files are downloaded like ordinary files. See [Download Files](#download-files) section for more information.
@@ -383,6 +386,14 @@ File.open('germany.jpg', 'w') {|f| f.write(file_object.body) }
 
 **Note**: This method is more memory intensive as the entire object is loaded into memory before saving the file as in the example above.
 
+
+## File URL
+
+To get a file's URL:
+
+```ruby
+file.public_url
+```
 
 ## Metadata
 
@@ -439,3 +450,4 @@ file.destroy
 ## Support and Feedback
 
 Your feedback is appreciated! If you have specific issues with the **fog** SDK, you should file an [issue via Github](https://github.com/fog/fog/issues).
+

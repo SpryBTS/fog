@@ -28,8 +28,8 @@ module Fog
   #macAddress: "00:50:56:a9:00:28",
   #unitNumber: 7,
   #
-        def list_vm_interfaces(vm_id)
-          get_vm_ref(vm_id).config.hardware.device.grep(RbVmomi::VIM::VirtualEthernetCard).map do |nic|
+        def list_vm_interfaces(vm_id, datacenter = nil)
+          get_vm_ref(vm_id, datacenter).config.hardware.device.grep(RbVmomi::VIM::VirtualEthernetCard).map do |nic|
             {
               :name    => nic.deviceInfo.label,
               :mac     => nic.macAddress,
@@ -40,7 +40,6 @@ module Fog
               :key     => nic.key,
             }
           end
-
         end
 
         def get_vm_interface(vm_id, options={})
@@ -48,13 +47,12 @@ module Fog
           if options.is_a? Fog::Compute::Vsphere::Interface
             options
           else
-            raise ArgumentError, "Either key or name is a required parameter. options: #{options}" unless options.has_key? :key or options.has_key? :mac or options.has_key? :name
+            raise ArgumentError, "Either key or name is a required parameter. options: #{options}" unless options.key? :key or options.key? :mac or options.key? :name
             list_vm_interfaces(vm_id).find do | nic |
-              (options.has_key? :key and nic[:key]==options[:key].to_i) or (options.has_key? :mac and nic[:mac]==options[:mac]) or (options.has_key? :name and nic[:name]==options[:name])
+              (options.key? :key and nic[:key]==options[:key].to_i) or (options.key? :mac and nic[:mac]==options[:mac]) or (options.key? :name and nic[:name]==options[:name])
             end
           end
         end
-
       end
       class Mock
         def list_vm_interfaces(vm_id)

@@ -4,9 +4,7 @@ require 'fog/hp/models/compute_v2/image'
 module Fog
   module Compute
     class HPV2
-
       class Images < Fog::Collection
-
         attribute :filters
 
         model Fog::Compute::HPV2::Image
@@ -16,9 +14,9 @@ module Fog
           super
         end
 
-        def all(filters = filters)
-          details = filters.delete(:details)
-          self.filters = filters
+        def all(filters_arg = filters)
+          details = filters_arg.delete(:details)
+          filters = filters_arg
           non_aliased_filters = Fog::HP.convert_aliased_attributes_to_original(self.model, filters)
           if details
             data = service.list_images_detail(non_aliased_filters).body['images']
@@ -35,9 +33,7 @@ module Fog
         rescue Fog::Compute::HPV2::NotFound
           nil
         end
-
       end
-
     end
   end
 end

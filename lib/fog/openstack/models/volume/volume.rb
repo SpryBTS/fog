@@ -1,15 +1,14 @@
-require 'fog/core/model'
+require 'fog/openstack/models/model'
 
 module Fog
   module Volume
     class OpenStack
-
-      class Volume < Fog::Model
-
+      class Volume < Fog::OpenStack::Model
         identity :id
 
         attribute :display_name,        :aliases => 'displayName'
         attribute :display_description, :aliases => 'displayDescription'
+        attribute :metadata
         attribute :status
         attribute :size
         attribute :volume_type,         :aliases => ['volumeType', 'type']
@@ -19,13 +18,7 @@ module Fog
         attribute :created_at,          :aliases => 'createdAt'
         attribute :attachments
         attribute :source_volid
-
-
-        def initialize(attributes)
-          # Old 'connection' is renamed as service and should be used instead
-          prepare_service_value(attributes)
-          super
-        end
+        attribute :tenant_id,           :aliases => 'os-vol-tenant-attr:tenant_id'
 
         def save
           requires :display_name, :size
@@ -40,14 +33,16 @@ module Fog
           true
         end
 
+        def extend(size)
+          requires :id
+          service.extend_volume(id, size)
+          true
+        end
+
         def ready?
           status == 'available'
         end
-
       end
-
     end
   end
-
 end
-

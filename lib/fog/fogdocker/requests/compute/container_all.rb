@@ -9,11 +9,10 @@ module Fog
         # before – Show only containers created before Id, include non-running ones.
         # size – true or false, Show the containers sizes
         def container_all(filters = {})
-          Docker::Container.all(filters.merge(:all => true)).map do |container|
-            downcase_hash_keys(container.info)
+          Docker::Container.all(filters.merge(:all => true), @connection).map do |container|
+            downcase_hash_keys(container.json)
           end
         end
-
       end
       class Mock
         def container_all(filters = {})

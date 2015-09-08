@@ -1,12 +1,10 @@
-require 'fog/core/collection'
+require 'fog/openstack/models/collection'
 require 'fog/openstack/models/storage/file'
 
 module Fog
   module Storage
     class OpenStack
-
-      class Files < Fog::Collection
-
+      class Files < Fog::OpenStack::Collection
         attribute :directory
         attribute :limit
         attribute :marker
@@ -18,10 +16,10 @@ module Fog
         def all(options = {})
           requires :directory
           options = {
-            'limit'   => limit,
-            'marker'  => marker,
-            'path'    => path,
-            'prefix'  => prefix
+            'limit'  => limit,
+            'marker' => marker,
+            'path'   => path,
+            'prefix' => prefix
           }.merge!(options)
           merge_attributes(options)
           parent = directory.collection.get(
@@ -29,13 +27,14 @@ module Fog
             options
           )
           if parent
+            # TODO change to load_response?
             load(parent.files.map {|file| file.attributes})
           else
             nil
           end
         end
 
-        alias :each_file_this_page :each
+        alias_method :each_file_this_page, :each
         def each
           if !block_given?
             self
@@ -96,9 +95,7 @@ module Fog
           requires :directory
           super({ :directory => directory }.merge!(attributes))
         end
-
       end
-
     end
   end
 end

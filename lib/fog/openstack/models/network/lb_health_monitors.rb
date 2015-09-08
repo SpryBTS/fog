@@ -1,11 +1,10 @@
-require 'fog/core/collection'
+require 'fog/openstack/models/collection'
 require 'fog/openstack/models/network/lb_health_monitor'
 
 module Fog
   module Network
     class OpenStack
-      class LbHealthMonitors < Fog::Collection
-
+      class LbHealthMonitors < Fog::OpenStack::Collection
         attribute :filters
 
         model Fog::Network::OpenStack::LbHealthMonitor
@@ -15,9 +14,9 @@ module Fog
           super
         end
 
-        def all(filters = filters)
-          self.filters = filters
-          load(service.list_lb_health_monitors(filters).body['health_monitors'])
+        def all(filters_arg = filters)
+          filters = filters_arg
+          load_response(service.list_lb_health_monitors(filters), 'health_monitors')
         end
 
         def get(health_monitor_id)
@@ -27,7 +26,6 @@ module Fog
         rescue Fog::Network::OpenStack::NotFound
           nil
         end
-
       end
     end
   end

@@ -22,12 +22,23 @@ Shindo.tests('Fog::Compute[:fogdocker] | server model', ['fogdocker']) do
                      :created,
                      :ipaddress,
                      :state_running,
-                     :cores,
                      :memory,
+                     :cores,
+                     :cpu_shares,
                      :hostname,
                      :image,
-                     #:exposed_ports,
-                     #:volumes
+                     :attach_stdin,
+                     :attach_stdout,
+                     :attach_stderr,
+                     :state_exit_code,
+                     :state_pid,
+                     :port_bindings,
+                     :links,
+                     :privileged,
+                     :tty,
+                     :exposed_ports,
+                     :volumes,
+                     :environment_variables
       ]
       tests("The server model should respond to") do
         attributes.each do |attribute|
@@ -36,7 +47,7 @@ Shindo.tests('Fog::Compute[:fogdocker] | server model', ['fogdocker']) do
       end
       tests("The attributes hash should have key") do
         attributes.each do |attribute|
-          test("#{attribute}") { model_attribute_hash.has_key? attribute }
+          test("#{attribute}") { model_attribute_hash.key? attribute }
         end
       end
     end

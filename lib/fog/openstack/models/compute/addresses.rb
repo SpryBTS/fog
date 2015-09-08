@@ -1,16 +1,14 @@
-require 'fog/core/collection'
+require 'fog/openstack/models/collection'
 require 'fog/openstack/models/compute/address'
 
 module Fog
   module Compute
     class OpenStack
-
-      class Addresses < Fog::Collection
-
+      class Addresses < Fog::OpenStack::Collection
         model Fog::Compute::OpenStack::Address
 
-        def all
-          load(service.list_all_addresses.body['floating_ips'])
+        def all(options = {})
+          load_response(service.list_all_addresses(options), 'floating_ips')
         end
 
         def get(address_id)
@@ -24,10 +22,7 @@ module Fog
         def get_address_pools
           service.list_address_pools.body['floating_ip_pools']
         end
-
       end
-
     end
   end
 end
-

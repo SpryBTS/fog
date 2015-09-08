@@ -4,9 +4,7 @@ require 'fog/fogdocker/models/compute/image'
 module Fog
   module Compute
     class Fogdocker
-
       class Images < Fog::Collection
-
         model Fog::Compute::Fogdocker::Image
 
         def all(filters = {})
@@ -17,6 +15,9 @@ module Fog
           new service.image_get(id)
         end
 
+        def image_search(query = {})
+          service.image_search(query)
+        end
       end
     end
   end

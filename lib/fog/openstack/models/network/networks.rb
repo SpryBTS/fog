@@ -1,11 +1,10 @@
-require 'fog/core/collection'
+require 'fog/openstack/models/collection'
 require 'fog/openstack/models/network/network'
 
 module Fog
   module Network
     class OpenStack
-      class Networks < Fog::Collection
-
+      class Networks < Fog::OpenStack::Collection
         attribute :filters
 
         model Fog::Network::OpenStack::Network
@@ -15,9 +14,9 @@ module Fog
           super
         end
 
-        def all(filters = filters)
-          self.filters = filters
-          load(service.list_networks(filters).body['networks'])
+        def all(filters_arg = filters)
+          filters = filters_arg
+          load_response(service.list_networks(filters), 'networks')
         end
 
         def get(network_id)
@@ -27,7 +26,6 @@ module Fog
         rescue Fog::Network::OpenStack::NotFound
           nil
         end
-
       end
     end
   end

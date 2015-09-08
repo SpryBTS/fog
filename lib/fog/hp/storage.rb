@@ -3,7 +3,6 @@ require 'fog/hp/core'
 module Fog
   module Storage
     class HP < Fog::Service
-
       requires    :hp_secret_key, :hp_tenant_id, :hp_avl_zone
       recognizes  :hp_auth_uri, :hp_cdn_ssl, :hp_cdn_uri, :credentials, :hp_service_type
       recognizes  :persistent, :connection_options
@@ -47,7 +46,6 @@ module Fog
       request :put_shared_object
 
       module Utils
-
         def cdn
           unless @hp_cdn_uri.nil?
             @cdn ||= Fog::CDN.new(
@@ -160,7 +158,7 @@ module Fog
         # * response<~Excon::Response>:
         #   * body<~String> - url for object
         def get_object_https_url(container, object, expires, options = {})
-          create_temp_url(container, object, expires, "GET", options.merge(:scheme => "https"))
+          create_temp_url(container, object, expires, "GET", {:port => 443}.merge(options).merge(:scheme => "https"))
         end
 
         # Get an expiring object http url
@@ -174,7 +172,7 @@ module Fog
         # * response<~Excon::Response>:
         #   * body<~String> - url for object
         def get_object_http_url(container, object, expires, options = {})
-          create_temp_url(container, object, expires, "GET", options.merge(:scheme => "http"))
+          create_temp_url(container, object, expires, "GET", {:port => 80}.merge(options).merge(:scheme => "http"))
         end
 
         # Get an object http url expiring in the given amount of seconds
@@ -199,15 +197,16 @@ module Fog
         # * object<~String> - Name of object to get expiring url for
         # * expires<~Time> - An expiry time for this url
         # * method<~String> - The method to use for accessing the object (GET, PUT, HEAD)
-        # * scheme<~String> - The scheme to use (http, https)
         # * options<~Hash> - An optional options hash
+        #   * 'scheme'<~String> - The scheme to use (http, https)
+        #   * 'host'<~String> - The host to use
+        #   * 'port'<~Integer> - The port to use
         #
         # ==== Returns
         # * response<~Excon::Response>:
         #   * body<~String> - url for object
         def create_temp_url(container, object, expires, method, options = {})
           raise ArgumentError, "Insufficient parameters specified." unless (container && object && expires && method)
-          raise ArgumentError, "Storage must my instantiated with the :os_account_meta_temp_url_key option" if @os_account_meta_temp_url_key.nil?
 
           # POST not allowed
           allowed_methods = %w{GET PUT HEAD}
@@ -217,6 +216,8 @@ module Fog
 
           expires        = expires.to_i
           scheme = options[:scheme] || @scheme
+          host = options[:host] || @host
+          port = options[:port] || @port
 
           # do not encode before signature generation, encode after
           sig_path = "#{@path}/#{container}/#{object}"
@@ -229,10 +230,15 @@ module Fog
           # HP uses a different strategy to create the signature that is passed to swift than OpenStack.
           # As the HP provider is broadly used by OpenStack users the OpenStack strategy is applied when
           # the @os_account_meta_temp_url_key is given.
-          if @os_account_meta_temp_url_key then
+          if @os_account_meta_temp_url_key
             hmac      = OpenSSL::HMAC.new(@os_account_meta_temp_url_key, OpenSSL::Digest::SHA1.new)
             signature= hmac.update(string_to_sign).hexdigest
           else
+            #Note if the value of the @hp_secret_key is really a password, this will NOT work
+            #HP Public Cloud FormPost and Temporary URL hashing algorithms require the secret key NOT password.
+            if Fog::HP.instance_variable_get("@hp_use_upass_auth_style")
+              raise ArgumentError, "Temporary URLS cannot be generated unless you login via access_key/secret_key"
+            end
             # Only works with 1.9+ Not compatible with 1.8.7
             #signed_string = Digest::HMAC.hexdigest(string_to_sign, @hp_secret_key, Digest::SHA1)
 
@@ -245,7 +251,14 @@ module Fog
           end
 
           # generate the temp url using the signature and expiry
-          "#{scheme}://#{@host}#{encoded_path}?temp_url_sig=#{signature}&temp_url_expires=#{expires}"
+          temp_url_options = {
+              :scheme => scheme,
+              :host => host,
+              :port => port,
+              :path => encoded_path,
+              :query => "temp_url_sig=#{signature}&temp_url_expires=#{expires}"
+          }
+          URI::Generic.build(temp_url_options).to_s
         end
       end
 
@@ -284,6 +297,15 @@ module Fog
           @hp_secret_key = options[:hp_secret_key]
           @hp_tenant_id = options[:hp_tenant_id]
           @os_account_meta_temp_url_key = options[:os_account_meta_temp_url_key]
+
+          @hp_storage_uri = options[:hp_auth_uri]
+
+          uri = URI.parse(@hp_storage_uri)
+          @host   = uri.host
+          @path   = uri.path
+          @persistent = options[:persistent] || false
+          @port   = uri.port
+          @scheme = uri.scheme
         end
 
         def data
@@ -293,7 +315,6 @@ module Fog
         def reset_data
           self.class.data.delete(@hp_access_key)
         end
-
       end
 
       class Real
@@ -311,6 +332,10 @@ module Fog
           unless @hp_access_key
             raise ArgumentError.new("Missing required arguments: hp_access_key. :hp_account_id is deprecated, please use :hp_access_key instead.")
           end
+          if options[:os_account_meta_temp_url_key]
+            Fog::Logger.deprecation(":os_account_meta_temp_url_key is deprecated, and will be removed in a future release. please use the :openstack provider instead.")
+            @os_account_meta_temp_url_key = options.delete(:os_account_meta_temp_url_key)
+          end
           @hp_secret_key = options[:hp_secret_key]
           @hp_auth_uri   = options[:hp_auth_uri]
           @hp_cdn_ssl    = options[:hp_cdn_ssl]
@@ -321,10 +346,9 @@ module Fog
           auth_version = auth_version.to_s.downcase.to_sym
 
           ### Pass the service name for object storage to the authentication call
-          options[:hp_service_type] ||= "Object Storage"
+          options[:hp_service_type] ||= "object-store"
           @hp_tenant_id = options[:hp_tenant_id]
           @hp_avl_zone  = options[:hp_avl_zone]
-          @os_account_meta_temp_url_key = options[:os_account_meta_temp_url_key]
 
           ### Make the authentication call
           if (auth_version == :v2)
@@ -408,7 +432,6 @@ module Fog
           end
           response
         end
-
       end
     end
   end

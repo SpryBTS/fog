@@ -3,7 +3,6 @@ require 'fog/fogdocker/core'
 module Fog
   module Compute
     class Fogdocker < Fog::Service
-
       requires   :docker_url
       recognizes :docker_username, :docker_password, :docker_email
 
@@ -26,6 +25,7 @@ module Fog
       request :image_create
       request :image_delete
       request :image_get
+      request :image_search
 
       class Mock
         def initialize(options={})
@@ -33,7 +33,6 @@ module Fog
       end
 
       class Real
-
         def initialize(options={})
           require 'docker'
           username = options[:docker_username]
@@ -41,19 +40,21 @@ module Fog
           email    = options[:docker_email]
           url      = options[:docker_url]
 
-          Docker.url = url
-          Docker.authenticate!('username' => username, 'password' => password, 'email' => email) unless username. nil? || username.empty?
+          connection_options = {:username => username, :password => password, :email => email}
+          @connection = Docker::Connection.new(url, connection_options)
+          Docker.authenticate!(connection_options, @connection) if username || email || password
+        rescue Docker::Error::AuthenticationError => e
+          raise Fog::Errors::Fogdocker::AuthenticationError.new(e.message)
         end
 
         def downcase_hash_keys(hash, k = [])
           return {k.join('_').gsub(/([a-z])([A-Z])/,'\1_\2').downcase => hash} unless hash.is_a?(Hash)
-          hash.inject({}){ |h, v| h.merge! downcase_hash_keys(v[-1], k + [v[0]]) }
+          hash.reduce({}){ |h, v| h.merge! downcase_hash_keys(v[-1], k + [v[0]]) }
         end
 
         def camelize_hash_keys(hash)
           Hash[ hash.map {|k, v| [k.to_s.split('_').map {|w| w.capitalize}.join, v] }]
         end
-
       end
     end
   end

@@ -89,6 +89,16 @@ Shindo.tests('OpenStack | authenticate', ['openstack']) do
       end
     end
 
+    tests("validate token") do
+        Fog::Identity[:openstack].validate_token(token, tenant_token)
+        Fog::Identity[:openstack].validate_token(token)
+    end
+
+    tests("check token") do
+      Fog::Identity[:openstack].check_token(token, tenant_token)
+      Fog::Identity[:openstack].check_token(token)
+    end
+
     tests("v2 missing service") do
       Excon.stub({ :method => 'POST', :path => "/v2.0/tokens" },
                  { :status => 200, :body => Fog::JSON.encode(body) })
@@ -102,9 +112,29 @@ Shindo.tests('OpenStack | authenticate', ['openstack']) do
       end
     end
 
+    tests("v2 missing storage service") do
+      Excon.stub({ :method => 'POST', :path => "/v2.0/tokens" },
+                 { :status => 200, :body => Fog::JSON.encode(body) })
+
+      raises(NoMethodError,
+            "undefined method `join' for \"object-store\":String") do
+        Fog::OpenStack.authenticate_v2(
+          :openstack_auth_uri     => URI('http://example/v2.0/tokens'),
+          :openstack_tenant       => 'admin',
+          :openstack_service_type => 'object-store')
+      end
+      raises(Fog::Errors::NotFound,
+            "Could not find service object-store.  Have compute, image") do
+        Fog::OpenStack.authenticate_v2(
+          :openstack_auth_uri     => URI('http://example/v2.0/tokens'),
+          :openstack_tenant       => 'admin',
+          :openstack_service_type => %w[object-store])
+      end
+    end
+
     tests("v2 auth with two compute services") do
       body_clone = body.clone
-      body_clone["access"]["serviceCatalog"] << 
+      body_clone["access"]["serviceCatalog"] <<
         {
         "endpoints" => [{
           "adminURL" =>
@@ -161,4 +191,3 @@ Shindo.tests('OpenStack | authenticate', ['openstack']) do
     Excon.defaults[:mock] = @old_mock_value
   end
 end
-

@@ -3,7 +3,6 @@ require 'fog/compute/models/server'
 module Fog
   module Compute
     class Glesys
-
       class Server < Fog::Compute::Server
         extend Fog::Deprecation
 
@@ -15,6 +14,7 @@ module Fog
         attribute :memorysize
         attribute :disksize
         attribute :transfer
+        attribute :bandwidth
         attribute :uptime
         attribute :templatename
         attribute :managedhosting
@@ -53,27 +53,37 @@ module Fog
         end
 
         def save
-          raise "Operation not supported" if self.identity
-          requires :hostname, :rootpassword
+          if self.identity
+            options = {
+              :serverid => self.identity,
+              :disksize => disksize,
+              :memorysize => memorysize,
+              :cpucores => cpucores,
+              :hostname => hostname,
+              :bandwidth => bandwidth
+            }
+            data = service.edit(options)
+          else
+            requires :hostname, :rootpassword
 
-          options = {
-            :datacenter     => datacenter   || "Falkenberg",
-            :platform       => platform     || "Xen",
-            :hostname       => hostname,
-            :templatename   => templatename || "Debian-6 x64",
-            :disksize       => disksize     || "10",
-            :memorysize     => memorysize   || "512",
-            :cpucores       => cpucores     || "1",
-            :rootpassword   => rootpassword,
-            :transfer       => transfer     || "500",
-          }
+            options = {
+              :datacenter     => datacenter   || "Falkenberg",
+              :platform       => platform     || "OpenVz",
+              :hostname       => hostname,
+              :templatename   => templatename || "Debian 7.0 64-bit",
+              :disksize       => disksize     || "10",
+              :memorysize     => memorysize   || "512",
+              :cpucores       => cpucores     || "1",
+              :rootpassword   => rootpassword
+            }
 
-          # optional options when creating a server:
-          [:ip, :ipv6, :description].each do |k|
-            options[k] = attributes[k] if attributes[k]
+            # optional options when creating a server:
+            [:description, :ip, :ipv6, :transfer, :bandwidth, :campaigncode, :sshkeyids, :sshkey].each do |k|
+              options[k] = attributes[k] if attributes[k]
+            end
+
+            data = service.create(options)
           end
-
-          data = service.create(options)
           merge_attributes(data.body['response']['server'])
           data.status == 200 ? true : false
         end
@@ -119,7 +129,6 @@ module Fog
         end
 
         def public_ip_address(options = {})
-
           return nil if iplist.nil?
 
           type = options[:type] || nil
@@ -136,7 +145,6 @@ module Fog
             ips.first["ipaddress"]
           end
         end
-
       end
     end
   end

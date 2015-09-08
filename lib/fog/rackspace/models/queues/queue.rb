@@ -4,7 +4,6 @@ module Fog
   module Rackspace
     class Queues
       class Queue < Fog::Model
-
         # @!attribute [rw] name
         # @return [String] name of queue
         identity :name
@@ -92,7 +91,7 @@ module Fog
 
           if claim
             message = claim.messages.first
-            yield message
+            yield message if block_given?
             message.destroy
             true
           else

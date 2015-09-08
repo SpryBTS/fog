@@ -1,11 +1,10 @@
-require 'fog/core/collection'
+require 'fog/openstack/models/collection'
 require 'fog/openstack/models/network/router'
 
 module Fog
   module Network
     class OpenStack
-      class Routers < Fog::Collection
-
+      class Routers < Fog::OpenStack::Collection
         attribute :filters
 
         model Fog::Network::OpenStack::Router
@@ -15,9 +14,9 @@ module Fog
           super
         end
 
-        def all(filters = filters)
-          self.filters = filters
-          load(service.list_routers(filters).body['routers'])
+        def all(filters_arg = filters)
+          filters = filters_arg
+          load_response(service.list_routers(filters), 'routers')
         end
 
         def get(router_id)
@@ -27,7 +26,6 @@ module Fog
         rescue Fog::Network::OpenStack::NotFound
           nil
         end
-
       end
     end
   end

@@ -3,6 +3,8 @@
 __LIB_DIR__ = File.expand_path(File.dirname(__FILE__))
 $LOAD_PATH.unshift __LIB_DIR__ unless $LOAD_PATH.include?(__LIB_DIR__)
 
+require 'fog/version'
+
 # Use core
 require 'fog/core'
 
@@ -10,7 +12,6 @@ require 'fog/core'
 # data exchange specific (to be extracted and used on a per provider basis)
 require 'fog/xml'
 require 'fog/json'
-require 'fog/core/parser'
 
 # deprecation wrappers (XML wrapped version)
 require 'fog/core/deprecated/connection'
@@ -38,7 +39,6 @@ require 'fog/hp'
 require 'fog/ibm'
 require 'fog/internet_archive'
 require 'fog/joyent'
-require 'fog/libvirt'
 require 'fog/linode'
 require 'fog/local'
 require 'fog/bare_metal_cloud'
@@ -48,8 +48,11 @@ require 'fog/rage4'
 require 'fog/riakcs'
 require 'fog/openstack'
 require 'fog/ovirt'
+require 'fog/powerdns'
+require 'fog/profitbricks'
 require 'fog/sakuracloud'
 require 'fog/serverlove'
+require 'fog/softlayer'
 require 'fog/storm_on_demand'
 require 'fog/terremark'
 require 'fog/vcloud'
@@ -61,4 +64,4 @@ require 'fog/xenserver'
 require 'fog/zerigo'
 require 'fog/cloudsigma'
 require 'fog/openvz'
-
+require 'fog/opennebula'

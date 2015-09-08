@@ -3,7 +3,6 @@ require 'fog/bare_metal_cloud/core'
 module Fog
   module Compute
     class BareMetalCloud < Fog::Service
-
       requires :bare_metal_cloud_password, :bare_metal_cloud_username
       recognizes :host, :port, :scheme, :persistent
 
@@ -21,7 +20,6 @@ module Fog
       request :reboot_server
 
       class Mock
-
         def self.data
           @data ||= Hash.new do |hash, key|
             hash[key] = {}
@@ -43,13 +41,10 @@ module Fog
         def reset_data
           self.class.data.delete(@bare_metal_cloud_username)
         end
-
       end
 
       class Real
-
         def initialize(options={})
-          require 'fog/core/parser'
 
           @bare_metal_cloud_password = options[:bare_metal_cloud_password]
           @bare_metal_cloud_username = options[:bare_metal_cloud_username]
@@ -80,7 +75,7 @@ module Fog
           end
 
           begin
-            response = @connection.request(params.merge!({:host => @host}))
+            response = @connection.request(params)
           rescue Excon::Errors::HTTPStatusError => error
             raise case error
             when Excon::Errors::NotFound
@@ -92,7 +87,6 @@ module Fog
 
           response
         end
-
       end
     end
   end

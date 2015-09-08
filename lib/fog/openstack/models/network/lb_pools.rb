@@ -1,11 +1,10 @@
-require 'fog/core/collection'
+require 'fog/openstack/models/collection'
 require 'fog/openstack/models/network/lb_pool'
 
 module Fog
   module Network
     class OpenStack
-      class LbPools < Fog::Collection
-
+      class LbPools < Fog::OpenStack::Collection
         attribute :filters
 
         model Fog::Network::OpenStack::LbPool
@@ -15,9 +14,9 @@ module Fog
           super
         end
 
-        def all(filters = filters)
-          self.filters = filters
-          load(service.list_lb_pools(filters).body['pools'])
+        def all(filters_arg = filters)
+          filters = filters_arg
+          load_response(service.list_lb_pools(filters), 'pools')
         end
 
         def get(pool_id)
@@ -27,7 +26,6 @@ module Fog
         rescue Fog::Network::OpenStack::NotFound
           nil
         end
-
       end
     end
   end

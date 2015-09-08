@@ -1,6 +1,5 @@
 class OpenStack < Fog::Bin
   class << self
-
     def class_for(key)
       case key
       when :compute
@@ -19,6 +18,10 @@ class OpenStack < Fog::Bin
         Fog::Metering::OpenStack
       when :orchestration
         Fog::Orchestration::OpenStack
+      when :baremetal
+        Fog::Baremetal::OpenStack
+      when :planning
+        Fog::Openstack::Planning
       else
         raise ArgumentError, "Unrecognized service: #{key}"
       end
@@ -51,6 +54,9 @@ class OpenStack < Fog::Bin
         when :orchestration
           Fog::Logger.warning("OpenStack[:orchestration] is not recommended, use Orchestration[:openstack] for portability")
           Fog::Orchestration.new(:provider => 'OpenStack')
+        when :baremetal
+          Fog::Logger.warning("OpenStack[:baremetal] is not recommended, use Baremetal[:openstack] for portability")
+          Fog::Baremetal.new(:provider => 'OpenStack')
         else
           raise ArgumentError, "Unrecognized service: #{key.inspect}"
         end
@@ -61,6 +67,5 @@ class OpenStack < Fog::Bin
     def services
       Fog::OpenStack.services
     end
-
   end
 end

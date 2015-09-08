@@ -1,11 +1,10 @@
-require 'fog/core/model'
+require 'fog/openstack/models/model'
 require 'fog/openstack/models/meta_parent'
 
 module Fog
   module Compute
     class OpenStack
-      class Metadatum < Fog::Model
-
+      class Metadatum < Fog::OpenStack::Model
         include Fog::Compute::OpenStack::MetaParent
 
         identity :key
@@ -22,7 +21,6 @@ module Fog
           service.update_meta(collection_name, @parent.id, key, value)
           true
         end
-
       end
     end
   end

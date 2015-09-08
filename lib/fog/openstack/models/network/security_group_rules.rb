@@ -1,11 +1,10 @@
-require 'fog/core/collection'
+require 'fog/openstack/models/collection'
 require 'fog/openstack/models/network/security_group_rule'
 
 module Fog
   module Network
     class OpenStack
-      class SecurityGroupRules < Fog::Collection
-
+      class SecurityGroupRules < Fog::OpenStack::Collection
         attribute :filters
 
         model Fog::Network::OpenStack::SecurityGroupRule
@@ -15,9 +14,9 @@ module Fog
           super
         end
 
-        def all(filters = filters)
-          self.filters = filters
-          load(service.list_security_group_rules(filters).body['security_group_rules'])
+        def all(filters_arg = filters)
+          filters = filters_arg
+          load_response(service.list_security_group_rules(filters), 'security_group_rules')
         end
 
         def get(sec_group_rule_id)

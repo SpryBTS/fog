@@ -8,6 +8,7 @@ module Fog
           vm_cfg        = {
             :name         => attributes[:name],
             :guestId      => attributes[:guest_id],
+            :version      => attributes[:hardware_version],
             :files        => { :vmPathName => vm_path_name(attributes) },
             :numCPUs      => attributes[:cpus],
             :numCoresPerSocket => attributes[:corespersocket],
@@ -15,6 +16,9 @@ module Fog
             :deviceChange => device_change(attributes),
             :extraConfig  => extra_config(attributes),
           }
+          vm_cfg[:cpuHotAddEnabled] = attributes[:cpuHotAddEnabled] if attributes.key?(:cpuHotAddEnabled)
+          vm_cfg[:memoryHotAddEnabled] = attributes[:memoryHotAddEnabled] if attributes.key?(:memoryHotAddEnabled)
+          vm_cfg[:firmware] = attributes[:firmware] if attributes.key?(:firmware)
           resource_pool = if attributes[:resource_pool]
                             get_raw_resource_pool(attributes[:resource_pool], attributes[:cluster], attributes[:datacenter])
                           else
@@ -106,7 +110,7 @@ module Fog
         end
 
         def controller_get_shared_from_options options
-          if (options.has_key? :shared and options[:shared]==false) or not options.has_key? :shared then
+          if (options.key? :shared and options[:shared]==false) or not options.key? :shared then
             :noSharing
           elsif options[:shared]==true then
             :virtualSharing
@@ -134,7 +138,7 @@ module Fog
             )
           }
 
-          if operation == :add && disk.thin == false && disk.eager_zero
+          if operation == :add && disk.thin == 'false' && disk.eager_zero == 'true'
             payload[:device][:backing][:eagerlyScrub] = disk.eager_zero
           end
 
@@ -149,13 +153,11 @@ module Fog
             }
           ]
         end
-
       end
 
       class Mock
         def create_vm attributes = { }
         end
-
       end
     end
   end

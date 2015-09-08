@@ -111,11 +111,15 @@ module Fog
         #              and so on, and enables you to manage the disk configuration.
         attribute :disk_config, :aliases => 'OS-DCF:diskConfig'
 
-
         # @!attribute [rw] config_drive_ext
         # @return [Boolean] whether a read-only configuration drive is attached
         # @see http://docs.rackspace.com/servers/api/v2/cs-devguide/content/config_drive_ext.html
         attribute :config_drive
+
+        # @!attribute [rw] user_data
+        # @return [Boolean] User-data
+        # @see http://docs.rackspace.com/servers/api/v2/cs-devguide/content/config_drive_ext.html
+        attribute :user_data
 
         # @!attribute [r] bandwidth
         # @return [Array] The amount of bandwidth used for the specified audit period.
@@ -144,26 +148,36 @@ module Fog
         # @see http://docs.rackspace.com/servers/api/v2/cs-devguide/content/List_Images-d1e4435.html
         attribute :image_id, :aliases => 'image', :squash => 'id'
 
-        # @!attribute [r] password
+        # @!attribute [w] boot_volume_id
+        # @return [String] The ID of a bootable volume from the BlockStorage service.
+        # @see http://developer.openstack.org/api-ref-compute-v2-ext.html#ext-os-block-device-mapping-v2-boot
+        attribute :boot_volume_id
+
+        # @!attribute [w] boot_image_id
+        # @return [String] The ID of an image to create a bootable volume from.
+        # @see http://developer.openstack.org/api-ref-compute-v2-ext.html#ext-os-block-device-mapping-v2-boot
+        attribute :boot_image_id
+
+        # @!attribute [rw] password
         # @return [String] Password for system adminstrator account.
-        # @note This value is ONLY populated on server creation.
-        attr_reader :password
+        # @see http://docs.rackspace.com/servers/api/v2/cs-devguide/content/Server_Passwords-d1e2510.html
+        # @note Can be set while creating a server, but use change_admin_password instead of save/update for changes.
+        attribute :password
 
         # @!attribute [rw] key_name
         # @return [String] The name of the key_pair used for server.
         # @note The key_pair/key_name is used to specify the keypair used for server creation. It is not populated by cloud servers.
         attribute :key_name
 
-
         def initialize(attributes={})
           @service = attributes[:service]
           super
         end
 
-        alias :access_ipv4_address :ipv4_address
-        alias :access_ipv4_address= :ipv4_address=
-        alias :access_ipv6_address :ipv6_address
-        alias :access_ipv6_address= :ipv6_address=
+        alias_method :access_ipv4_address, :ipv4_address
+        alias_method :access_ipv4_address=, :ipv4_address=
+        alias_method :access_ipv6_address, :ipv6_address
+        alias_method :access_ipv6_address=, :ipv6_address=
 
         # Server metadata
         # @return [Fog::Compute::RackspaceV2::Metadata] metadata key value pairs.
@@ -217,7 +231,8 @@ module Fog
 
         # Creates server
         # * requires attributes: service:, :name, :image_id, and :flavor_id
-        # * optional attributes :disk_config, :metadata, :personality, :config_drive
+        # * optional attributes :disk_config, :metadata, :personality, :config_drive, :boot_volume_id, :boot_image_id
+        # * :image_id should be "" if :boot_volume_id or :boot_image_id are provided.
         # @return [Boolean] returns true if server is being created
         # @raise [Fog::Compute::RackspaceV2::NotFound] - HTTP 404
         # @raise [Fog::Compute::RackspaceV2::BadRequest] - HTTP 400
@@ -239,16 +254,21 @@ module Fog
             modified_options[:key_name] = attributes[:keypair]
           end
 
+          modified_options[:password] ||= attributes[:password] unless password.nil?
           modified_options[:networks] ||= attributes[:networks]
           modified_options[:disk_config] = disk_config unless disk_config.nil?
           modified_options[:metadata] = metadata.to_hash unless @metadata.nil?
           modified_options[:personality] = personality unless personality.nil?
           modified_options[:config_drive] = config_drive unless config_drive.nil?
+          modified_options[:user_data] = user_data_encoded unless user_data_encoded.nil?
           modified_options[:key_name] ||= attributes[:key_name]
+          modified_options[:boot_volume_id] ||= attributes[:boot_volume_id]
+          modified_options[:boot_image_id] ||= attributes[:boot_image_id]
 
           if modified_options[:networks]
             modified_options[:networks].map! { |id| { :uuid => id } }
           end
+
           data = service.create_server(name, image_id, flavor_id, 1, 1, modified_options)
           merge_attributes(data.body['server'])
           true
@@ -418,7 +438,6 @@ module Fog
           true
         end
 
-
         # Rebuild removes all data on the server and replaces it with the specified image. The id and all IP addresses remain the same.
         # @param [String] image_id image to use for rebuild
         # @return [Boolean] returns true if rebuild is in process
@@ -546,14 +565,14 @@ module Fog
         # @note Though Rackspace does not enforce complexity requirements for the password, the operating system might. If the password is not complex enough, the server might enter an ERROR state.
         # @see http://docs.rackspace.com/servers/api/v2/cs-devguide/content/Change_Password-d1e3234.html
         #
-        # * Status Transition:	
+        # * Status Transition:
         #   * ACTIVE -> PASSWORD -> ACTIVE
         #   * ACTIVE -> PASSWORD -> ERROR (on error)
         def change_admin_password(password)
           requires :identity
           service.change_server_password(identity, password)
           self.state = PASSWORD
-          @password = password
+          self.password = password
           true
         end
 
@@ -561,6 +580,8 @@ module Fog
         # @see Servers#bootstrap
         def setup(credentials = {})
           requires :ssh_ip_address, :identity, :public_key, :username
+
+          retried_disconnect = false
 
           commands = [
             %{mkdir .ssh},
@@ -571,12 +592,20 @@ module Fog
           ]
           commands.compact
 
-          @password = nil if password_lock
+          self.password = nil if password_lock
 
           Fog::SSH.new(ssh_ip_address, username, credentials).run(commands)
         rescue Errno::ECONNREFUSED
           sleep(1)
           retry
+        # Ubuntu 12.04 images seem to be disconnecting during the ssh setup process.
+        # This rescue block is an effort to address that issue.
+        rescue Net::SSH::Disconnect
+          unless retried_disconnect
+            retried_disconnect = true
+            sleep(1)
+            retry
+          end
         end
 
         def virtual_interfaces
@@ -586,11 +615,15 @@ module Fog
         private
 
         def adminPass=(new_admin_pass)
-          @password = new_admin_pass
+          self.password = new_admin_pass
         end
 
         def password_lock
           "passwd -l #{username}" unless attributes[:no_passwd_lock]
+        end
+
+        def user_data_encoded
+           self.user_data.nil? ? nil : [self.user_data].pack('m')
         end
       end
     end

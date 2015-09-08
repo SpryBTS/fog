@@ -4,9 +4,7 @@ require 'fog/openstack/models/compute/metadata'
 module Fog
   module Compute
     class OpenStack
-
       class Server < Fog::Compute::Server
-
         identity :id
         attribute :instance_name, :aliases => 'OS-EXT-SRV-ATTR:instance_name'
 
@@ -52,8 +50,11 @@ module Fog
 
         attr_reader :password
         attr_writer :image_ref, :flavor_ref, :nics, :os_scheduler_hints
-        attr_accessor :block_device_mapping
+        attr_accessor :block_device_mapping, :block_device_mapping_v2
 
+        # In some cases it's handy to be able to store the project for the record, e.g. swift doesn't contain project info
+        # in the result, so we can track it in this attribute based on what project was used in the request
+        attr_accessor :project
 
         def initialize(attributes={})
           # Old 'connection' is renamed as service and should be used instead
@@ -65,6 +66,7 @@ module Fog
           self.nics = attributes.delete(:nics)
           self.os_scheduler_hints = attributes.delete(:os_scheduler_hints)
           self.block_device_mapping = attributes.delete(:block_device_mapping)
+          self.block_device_mapping_v2 = attributes.delete(:block_device_mapping_v2)
 
           super
         end
@@ -86,7 +88,7 @@ module Fog
         end
 
         def user_data=(ascii_userdata)
-          self.user_data_encoded = [ascii_userdata].pack('m')
+          self.user_data_encoded = [ascii_userdata].pack('m') if ascii_userdata
         end
 
         def destroy
@@ -124,17 +126,17 @@ module Fog
           # Return them all, leading with manually assigned addresses
           manual = all_addresses.map{|addr| addr["ip"]}
 
-          all_floating.sort{ |a,b| 
+          all_floating.sort{ |a,b|
             a_manual = manual.include? a
             b_manual = manual.include? b
 
-            if a_manual and !b_manual 
+            if a_manual and !b_manual
               -1
-            elsif !a_manual and b_manual 
+            elsif !a_manual and b_manual
               1
             else 0 end
           }
-
+          all_floating.empty? ? manual : all_floating
         end
 
         alias_method :public_ip_addresses, :floating_ip_addresses
@@ -210,7 +212,7 @@ module Fog
         def security_groups
           requires :id
 
-          groups = service.list_security_groups(id).body['security_groups']
+          groups = service.list_security_groups(:server_id => id).body['security_groups']
 
           groups.map do |group|
             Fog::Compute::OpenStack::SecurityGroup.new group.merge({:service => service})
@@ -225,6 +227,49 @@ module Fog
           requires :id
           service.reboot_server(id, type)
           true
+        end
+
+        def stop
+          requires :id
+          service.stop_server(id)
+        end
+
+        def pause
+          requires :id
+          service.pause_server(id)
+        end
+
+        def suspend
+          requires :id
+          service.suspend_server(id)
+        end
+
+        def start
+          requires :id
+
+          case state.downcase
+          when 'paused'
+            service.unpause_server(id)
+          when 'suspended'
+            service.resume_server(id)
+          else
+            service.start_server(id)
+          end
+        end
+
+        def shelve
+          requires :id
+          service.shelve_server(id)
+        end
+
+        def unshelve
+          requires :id
+          service.unshelve_server(id)
+        end
+
+        def shelve_offload
+          requires :id
+          service.shelve_offload_server(id)
         end
 
         def create_image(name, metadata={})
@@ -276,7 +321,7 @@ module Fog
 
         def volumes
           requires :id
-          service.volumes.find_all do |vol|
+          service.volumes.select do |vol|
             vol.attachments.find { |attachment| attachment["serverId"] == id }
           end
         end
@@ -301,7 +346,7 @@ module Fog
         def save
           raise Fog::Errors::Error.new('Resaving an existing object may create a duplicate') if persisted?
           requires :flavor_ref, :name
-          requires_one :image_ref, :block_device_mapping
+          requires_one :image_ref, :block_device_mapping, :block_device_mapping_v2
           options = {
             'personality' => personality,
             'accessIPv4' => accessIPv4,
@@ -315,7 +360,8 @@ module Fog
             'max_count'   => @max_count,
             'nics' => @nics,
             'os:scheduler_hints' => @os_scheduler_hints,
-            'block_device_mapping' => @block_device_mapping
+            'block_device_mapping' => @block_device_mapping,
+            'block_device_mapping_v2' => @block_device_mapping_v2,
           }
           options['metadata'] = metadata.to_hash unless @metadata.nil?
           options = options.reject {|key, value| value.nil?}
@@ -343,10 +389,7 @@ module Fog
         def adminPass=(new_admin_pass)
           @password = new_admin_pass
         end
-
       end
-
     end
   end
-
 end

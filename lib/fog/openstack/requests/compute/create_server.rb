@@ -2,7 +2,6 @@ module Fog
   module Compute
     class OpenStack
       class Real
-
         def create_server(name, image_ref, flavor_ref, options = {})
           data = {
             'server' => {
@@ -38,8 +37,8 @@ module Fog
             data['server']['personality'] = []
             for file in options['personality']
               data['server']['personality'] << {
-                'contents'  => Base64.encode64(file['contents']),
-                'path'      => file['path']
+                'contents'  => Base64.encode64(file['contents'] || file[:contents]),
+                'path'      => file['path'] || file[:path]
               }
             end
           end
@@ -58,23 +57,30 @@ module Fog
             data['os:scheduler_hints'] = options['os:scheduler_hints']
           end
 
-          if options['block_device_mapping']
-            data['server']['block_device_mapping'] =
-            [options['block_device_mapping']].flatten.map do |mapping|
+          if (block_device_mapping = options['block_device_mapping_v2'])
+            data['server']['block_device_mapping_v2'] = [block_device_mapping].flatten.collect do |mapping|
               {
-                'volume_size' => mapping[:volume_size],
-                'volume_id' => mapping[:volume_id],
+                'boot_index'            => mapping[:boot_index],
                 'delete_on_termination' => mapping[:delete_on_termination],
-                'device_name' => mapping[:device_name]
+                'destination_type'      => mapping[:destination_type],
+                'device_name'           => mapping[:device_name],
+                'source_type'           => mapping[:source_type],
+                'uuid'                  => mapping[:uuid],
+                'volume_size'           => mapping[:volume_size],
+              }
+            end
+          elsif (block_device_mapping = options['block_device_mapping'])
+            data['server']['block_device_mapping'] = [block_device_mapping].flatten.collect do |mapping|
+              {
+                'delete_on_termination' => mapping[:delete_on_termination],
+                'device_name'           => mapping[:device_name],
+                'volume_id'             => mapping[:volume_id],
+                'volume_size'           => mapping[:volume_size],
               }
             end
           end
 
-          path = if data['server']['block_device_mapping']
-                   'os-volumes_boot.json'
-                 else
-                   'servers.json'
-                 end
+          path = block_device_mapping ? 'os-volumes_boot.json' : 'servers.json'
 
           request(
             :body     => Fog::JSON.encode(data),
@@ -83,11 +89,9 @@ module Fog
             :path     => path
           )
         end
-
       end
 
       class Mock
-
         def create_server(name, image_ref, flavor_ref, options = {})
           response = Excon::Response.new
           response.status = 202
@@ -143,6 +147,12 @@ module Fog
               'id'              => server_id,
               'links'           => mock_data['links'],
             }
+          end
+
+          if block_devices = options["block_device_mapping_v2"]
+            block_devices.each { |bd| compute.volumes.get(bd[:uuid]).attach(server_id, bd[:device_name]) }
+          elsif block_device = options["block_device_mapping"]
+            compute.volumes.get(block_device[:volume_id]).attach(server_id, block_device[:device_name])
           end
 
           self.data[:last_modified][:servers][server_id] = Time.now

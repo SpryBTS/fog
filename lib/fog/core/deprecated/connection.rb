@@ -1,7 +1,6 @@
 require "fog/xml"
 
 module Fog
-
   # @deprecated Use {Fog::Core::Connection} or {XML::SAXParserConnection} if you
   #   require the response body to be parsed.
   #
@@ -15,9 +14,9 @@ module Fog
   class Connection < Fog::XML::Connection
     def request(params, &block)
       if params.key?(:parser)
-        Fog::Logger.deprecation("Fog::XML::Connection is deprecated use Fog::XML::Connection instead [light_black](#{caller.first})[/]")
+        Fog::Logger.deprecation("Fog::Connection is deprecated use Fog::XML::Connection instead [light_black](#{caller.first})[/]")
       else
-        Fog::Logger.deprecation("Fog::XML::Connection is deprecated use Fog::Core::Connection instead [light_black](#{caller.first})[/]")
+        Fog::Logger.deprecation("Fog::Connection is deprecated use Fog::Core::Connection instead [light_black](#{caller.first})[/]")
       end
       super(params)
     end

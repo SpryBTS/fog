@@ -36,8 +36,7 @@ module Fog
         def populate_uris(options = {})
           options[:vdc_id] || raise("vdc_id option is required")
           options[:vdc_uri] =  vdc_end_point(options[:vdc_id])
-          options[:network_id] || raise("network_id option is required")
-          options[:network_uri] = network_end_point(options[:network_id])
+          options[:network_uri] = network_end_point(options[:network_id]) if options[:network_id]
           options[:template_uri] = vapp_template_end_point(options[:template_id]) || raise("template_id option is required")
           options
         end
@@ -62,6 +61,21 @@ module Fog
             }
             # The template
             xml.Source(:href => options[:template_uri])
+            # Use of sourceItems for configuring VM's during instantiation.
+            # NOTE: Name and storage profile configuration supported so far.
+            # http://pubs.vmware.com/vca/index.jsp?topic=%2Fcom.vmware.vcloud.api.doc_56%2FGUID-BF9B790D-512E-4EA1-99E8-6826D4B8E6DC.html
+            (options[:vms_config] || []).each do |vm_config|
+              next unless vm_config[:href]
+              xml.SourcedItem {
+                xml.Source(:href => vm_config[:href])
+                xml.VmGeneralParams{
+                  xml.Name(vm_config[:name]) if vm_config[:name]
+                }
+                if storage_href = vm_config[:storage_profile_href]
+                  xml.StorageProfile(:href => storage_href)
+                end
+              }
+            end
             xml.AllEULAsAccepted("true")
           }
         end
@@ -90,7 +104,6 @@ module Fog
         def endpoint
           end_point
         end
-
       end
     end
   end

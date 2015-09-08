@@ -1,12 +1,19 @@
 module Fog
   module Network
     class OpenStack
-
       class Real
-        def add_router_interface(router_id, subnet_id, options = {})
-          data = {
-              'subnet_id' => subnet_id,
-          }
+        def add_router_interface(router_id, subnet_id_or_options)
+
+          if(subnet_id_or_options.is_a? String)
+            data = {
+                'subnet_id' => subnet_id_or_options,
+            }
+          elsif subnet_id_or_options.is_a? Hash
+            data = subnet_id_or_options
+          else
+            raise ArgumentError,'Please pass a subnet id or hash {subnet_id:xxx,port_id:xxx}'
+          end
+
 
           request(
             :body     => Fog::JSON.encode(data),
@@ -42,7 +49,6 @@ module Fog
           response
         end
       end
-
     end
   end
 end

@@ -1,20 +1,30 @@
-require 'fog/core/model'
+require 'fog/openstack/models/model'
 
 module Fog
   module Storage
     class OpenStack
-
-      class File < Fog::Model
-
+      class File < Fog::OpenStack::Model
         identity  :key,             :aliases => 'name'
 
+        attribute :access_control_allow_origin, :aliases => ['Access-Control-Allow-Origin']
         attribute :content_length,  :aliases => ['bytes', 'Content-Length'], :type => :integer
         attribute :content_type,    :aliases => ['content_type', 'Content-Type']
         attribute :content_disposition, :aliases => ['content_disposition', 'Content-Disposition']
         attribute :etag,            :aliases => ['hash', 'Etag']
         attribute :last_modified,   :aliases => ['last_modified', 'Last-Modified'], :type => :time
-        attribute :access_control_allow_origin, :aliases => ['Access-Control-Allow-Origin']
+        attribute :metadata
         attribute :origin,          :aliases => ['Origin']
+        # @!attribute [rw] delete_at
+        # A Unix Epoch Timestamp, in integer form, representing the time when this object will be automatically deleted.
+        # @return [Integer] the unix epoch timestamp of when this object will be automatically deleted
+        # @see http://docs.openstack.org/developer/swift/overview_expiring_objects.html
+        attribute :delete_at, :aliases => ['X-Delete-At']
+
+        # @!attribute [rw] delete_after
+        # A number of seconds representing how long from now this object will be automatically deleted.
+        # @return [Integer] the number of seconds until this object will be automatically deleted
+        # @see http://docs.openstack.org/developer/swift/overview_expiring_objects.html
+        attribute :delete_after, :aliases => ['X-Delete-After']
 
         def body
           attributes[:body] ||= if last_modified
@@ -49,7 +59,7 @@ module Fog
         end
 
         def metadata
-          @metadata ||= headers_to_metadata
+          attributes[:metadata] ||= headers_to_metadata
         end
 
         def owner=(new_owner)
@@ -83,13 +93,14 @@ module Fog
           self.collection.get_url(self.key)
         end
 
-
         def save(options = {})
           requires :body, :directory, :key
           options['Content-Type'] = content_type if content_type
           options['Content-Disposition'] = content_disposition if content_disposition
           options['Access-Control-Allow-Origin'] = access_control_allow_origin if access_control_allow_origin
           options['Origin'] = origin if origin
+          options['X-Delete-At'] = delete_at if delete_at
+          options['X-Delete-After'] = delete_after if delete_after
           options.merge!(metadata_to_headers)
 
           data = service.put_object(directory.key, key, body, options)
@@ -160,7 +171,6 @@ module Fog
           merge_attributes(data.headers.reject {|key, value| ['Content-Length', 'Content-Type'].include?(key)})
         end
       end
-
     end
   end
 end

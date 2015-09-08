@@ -2,24 +2,24 @@ module Fog
   module Compute
     class OpenStack
       class Real
-
         # Available filters: name, status, image, flavor, changes_since, reservation_id
-        def list_servers_detail(filters = {})
-          params = Hash.new
-          filters[:all_tenants] ? params['all_tenants'] = 'True' : params = filters
+        def list_servers_detail(options = {})
+          params = options.dup
+          if params[:all_tenants]
+            params['all_tenants'] = 'True'
+            params.delete(:all_tenants)
+          end
 
           request(
-            :expects  => [200, 203],
-            :method   => 'GET',
-            :path     => 'servers/detail.json',
+            :expects => [200, 203],
+            :method  => 'GET',
+            :path    => 'servers/detail.json',
             :query   => params
           )
         end
-
       end
 
       class Mock
-
         def list_servers_detail(filters = {})
           response = Excon::Response.new
 
@@ -37,7 +37,6 @@ module Fog
           response.body = { 'servers' => servers }
           response
         end
-
       end
     end
   end

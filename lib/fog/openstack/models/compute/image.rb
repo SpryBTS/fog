@@ -1,12 +1,10 @@
-require 'fog/core/model'
+require 'fog/openstack/models/model'
 require 'fog/openstack/models/compute/metadata'
 
 module Fog
   module Compute
     class OpenStack
-
-      class Image < Fog::Model
-
+      class Image < Fog::OpenStack::Model
         identity :id
 
         attribute :name
@@ -19,12 +17,6 @@ module Fog
         attribute :server,   :aliases => 'server'
         attribute :metadata
         attribute :links
-
-        def initialize(attributes)
-          # Old 'connection' is renamed as service and should be used instead
-          prepare_service_value(attributes)
-          super
-        end
 
         def metadata
           @metadata ||= begin
@@ -50,9 +42,7 @@ module Fog
         def ready?
           status == 'ACTIVE'
         end
-
       end
-
     end
   end
 end

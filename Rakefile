@@ -6,6 +6,12 @@ require 'rubygems/package_task'
 require 'yard'
 require File.dirname(__FILE__) + '/lib/fog'
 
+require "tasks/changelog_task"
+Fog::Rake::ChangelogTask.new
+
+require "tasks/github_release_task"
+Fog::Rake::GithubReleaseTask.new
+
 #############################################################################
 #
 # Helper functions
@@ -37,7 +43,7 @@ def gem_file
 end
 
 def replace_header(head, header_name)
-  head.sub!(/(\.#{header_name}\s*= ').*'/) { "#{$1}#{send(header_name)}'"}
+  head.sub!(/(\.#{header_name}\s*= \").*\"/) { "#{$1}#{send(header_name)}\""}
 end
 
 #############################################################################
@@ -48,17 +54,19 @@ end
 
 GEM_NAME = "#{name}"
 task :default => :test
-task :travis  => ['test', 'test:travis', 'coveralls_push_workaround']
+task :travis  => ['test', 'test:travis', 'test:openstack_specs']
 
 Rake::TestTask.new do |t|
-  t.pattern = File.join("**", "test", "**", "*_test.rb")
+  t.pattern = File.join("spec", "**", "*_spec.rb")
+  t.libs << "spec"
 end
 
 namespace :test do
-  mock = 'true' || ENV['FOG_MOCK']
-  task :travis do
-      # jruby coveralls causes an OOM in travis
-      ENV['COVERAGE'] = 'false' if RUBY_PLATFORM == 'java'
+  mock = ENV['FOG_MOCK'] || 'true'
+  task :openstack_specs do
+    sh("export FOG_MOCK=false && bundle exec rspec spec/fog/openstack/*_spec.rb")
+  end
+  task :travis => [:openstack_specs] do
       sh("export FOG_MOCK=#{mock} && bundle exec shindont")
   end
   task :vsphere do
@@ -67,6 +75,19 @@ namespace :test do
   task :openvz do
       sh("export FOG_MOCK=#{mock} && bundle exec shindont tests/openvz")
   end
+  task :ovirt do
+      sh("export FOG_MOCK=#{mock} && bundle exec shindont tests/ovirt")
+  end
+  task :openstack do
+      sh("export FOG_MOCK=#{mock} && bundle exec shindont tests/openstack")
+  end
+  task :rackspace do
+      sh("export FOG_MOCK=#{mock} && bundle exec shindont tests/rackspace")
+  end
+  task :cloudstack do
+      sh("export FOG_MOCK=#{mock} && bundle exec shindont tests/cloudstack")
+  end
+
 end
 
 desc 'Run mocked tests for a specific provider'
@@ -93,7 +114,7 @@ task :nuke do
     begin
       compute = Fog::Compute.new(:provider => provider)
       for server in compute.servers
-        Formatador.display_line("[#{provider}] destroying server #{server.identity}")
+        Fog::Formatador.display_line("[#{provider}] destroying server #{server.identity}")
         server.destroy rescue nil
       end
     rescue
@@ -104,7 +125,7 @@ task :nuke do
         for record in zone.records
           record.destroy rescue nil
         end
-        Formatador.display_line("[#{provider}] destroying zone #{zone.identity}")
+        Fog::Formatador.display_line("[#{provider}] destroying zone #{zone.identity}")
         zone.destroy rescue nil
       end
     rescue
@@ -151,12 +172,11 @@ end
 
 task :git_mark_release do
   sh "git commit --allow-empty -a -m 'Release #{version}'"
-  sh "git tag v#{version}"
 end
 
 task :git_push_release do
   sh "git push origin master"
-  sh "git push origin v#{version}"
+  ::Rake::Task[:github_release].invoke
 end
 
 task :gem_push do
@@ -205,16 +225,4 @@ YARDOC_LOCATION = "doc"
 YARD::Rake::YardocTask.new do |t|
   t.files   = ['lib/**/*.rb', "README"]
   t.options = ["--output-dir", YARDOC_LOCATION, "--title", "#{name} #{version}"]
-end
-
-require "tasks/changelog_task"
-Fog::Rake::ChangelogTask.new
-
-task :coveralls_push_workaround do
-  use_coveralls = (Gem::Version.new(RUBY_VERSION) > Gem::Version.new('1.9.2'))
-  if (ENV['COVERAGE'] != 'false') && use_coveralls
-    require 'coveralls/rake/task'
-    Coveralls::RakeTask.new
-    Rake::Task["coveralls:push"].invoke
-  end
 end

@@ -13,11 +13,75 @@ module Fog
                 build_firewall_service(xml)
                 build_nat_service(xml)
                 build_load_balancer_service(xml)
+                build_vpn(xml)
+                build_dhcp(xml)
+                build_static_routing_service(xml)
               }
             end.to_xml
           end
 
           private
+
+          def build_dhcp(xml)
+            dhcp_config = @configuration[:GatewayDhcpService]
+            return unless dhcp_config
+
+            xml.GatewayDhcpService {
+              xml.IsEnabled dhcp_config[:IsEnabled] if dhcp_config.key?(:IsEnabled)
+              dhcp_config[:pools].each do |pool|
+                xml.Pool {
+                  xml.IsEnabled pool[:IsEnabled]
+                  xml.Network pool[:Network]
+                  xml.DefaultLeaseTime pool[:DefaultLeaseTime]
+                  xml.MaxLeaseTime pool[:MaxLeaseTime]
+                  xml.LowIpAddress pool[:LowIpAddress]
+                  xml.HighIpAddress pool[:HighIpAddress]
+                }
+              end
+            }
+          end
+
+          def build_vpn(xml)
+            vpn_config = @configuration[:GatewayIpsecVpnService]
+            return unless vpn_config
+
+            xml.GatewayIpsecVpnService {
+              xml.IsEnabled vpn_config[:IsEnabled] if vpn_config.key?(:IsEnabled)
+              vpn_config[:Tunnel].each do |tunnel_config|
+                xml.Tunnel {
+                  xml.Name tunnel_config[:Name]
+                  xml.Description tunnel_config[:Description]
+                  xml.IpsecVpnLocalPeer {
+                    xml.Id tunnel_config[:IpsecVpnLocalPeerId]
+                    xml.Name tunnel_config[:IpsecVpnLocalPeerName]
+                  }
+                  xml.PeerIpAddress tunnel_config[:PeerIpAddress]
+                  xml.PeerId tunnel_config[:PeerId]
+                  xml.LocalIpAddress tunnel_config[:LocalIpAddress]
+                  xml.LocalId tunnel_config[:LocalId]            
+                  tunnel_config[:LocalSubnet].each do |subnet|
+                    xml.LocalSubnet {
+                      xml.Name subnet[:Name]
+                      xml.Gateway subnet[:Gateway]
+                      xml.Netmask subnet[:Netmask]
+                    }
+                  end
+                  tunnel_config[:PeerSubnet].each do |subnet|
+                    xml.PeerSubnet {
+                      xml.Name subnet[:Name]
+                      xml.Gateway subnet[:Gateway]
+                      xml.Netmask subnet[:Netmask]
+                    }
+                  end
+                  xml.SharedSecret tunnel_config[:SharedSecret]
+                  xml.SharedSecretEncrypted tunnel_config[:SharedSecretEncrypted] if tunnel_config.key?(:SharedSecretEncrypted)
+                  xml.EncryptionProtocol tunnel_config[:EncryptionProtocol]
+                  xml.Mtu tunnel_config[:Mtu]
+                  xml.IsEnabled tunnel_config[:IsEnabled]
+                }
+              end
+            }
+          end
 
           def build_load_balancer_service(xml)
             lb_config = @configuration[:LoadBalancerService]
@@ -116,6 +180,27 @@ module Fog
             }
           end
 
+          def build_static_routing_service(xml)
+            routing_config = @configuration[:StaticRoutingService]
+            return unless routing_config
+
+            xml.StaticRoutingService {
+              xml.IsEnabled routing_config[:IsEnabled]
+              routing_config[:StaticRoute].each do |rule|
+                xml.StaticRoute{
+                  xml.Name rule[:Name]
+                  xml.Network rule[:Network]
+                  xml.NextHopIp rule[:NextHopIp]
+                  xml.GatewayInterface(
+                    :type => rule[:GatewayInterface][:type],
+                    :name => rule[:GatewayInterface][:name],
+                    :href => rule[:GatewayInterface][:href]
+                  )
+                }
+              end
+            }
+          end
+
           def build_firewall_service(xml)
             firewall_config = @configuration[:FirewallService]
             return unless firewall_config
@@ -134,7 +219,7 @@ module Fog
 
                   xml.Protocols {
                     rule[:Protocols].each do |key, value|
-                      xml.send(key.to_s.capitalize, value)
+                    xml.send(key.to_s.capitalize, value)
                     end
                   }
                   xml.IcmpSubType rule[:IcmpSubType] if rule.key?(:IcmpSubType)
@@ -151,7 +236,6 @@ module Fog
               end
             }
           end
-
         end
       end
     end

@@ -2,35 +2,34 @@ module Fog
   module Storage
     class HP
       class Real
-
         # Get details for an object
         #
         # ==== Parameters
         # * container<~String> - Name of container to look in
         # * object<~String> - Name of object to look for
         #
-        def get_object(container, object, &block)
+        def get_object(container, object, options = {}, &block)
           if block_given?
             response = request(
               :response_block  => block,
-              :expects  => 200,
+              :expects  => [200, 206],
+              :headers  => options,
               :method   => 'GET',
               :path     => "#{Fog::HP.escape(container)}/#{Fog::HP.escape(object)}"
             )
           else
             response = request({
-              :expects  => 200,
+              :expects  => [200, 206],
+              :headers  => options,
               :method   => 'GET',
               :path     => "#{Fog::HP.escape(container)}/#{Fog::HP.escape(object)}"
             }, false, &block)
           end
           response
         end
-
       end
 
       class Mock # :nodoc:all
-
         def get_object(container_name, object_name, options = {}, &block)
           unless container_name
             raise ArgumentError.new('container_name is required')
@@ -77,9 +76,7 @@ module Fog
           end
           response
         end
-
       end
-
     end
   end
 end

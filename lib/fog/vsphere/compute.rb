@@ -4,10 +4,10 @@ require 'digest/sha2'
 module Fog
   module Compute
     class Vsphere < Fog::Service
-
       requires :vsphere_username, :vsphere_password, :vsphere_server
       recognizes :vsphere_port, :vsphere_path, :vsphere_ns
       recognizes :vsphere_rev, :vsphere_ssl, :vsphere_expected_pubkey_hash
+      recognizes :vsphere_debug
 
       model_path 'fog/vsphere/models/compute'
       model :server
@@ -42,6 +42,7 @@ module Fog
 
       request_path 'fog/vsphere/requests/compute'
       request :current_time
+      request :cloudinit_to_customspec
       request :list_virtual_machines
       request :vm_power_off
       request :vm_power_on
@@ -49,6 +50,7 @@ module Fog
       request :vm_clone
       request :vm_destroy
       request :vm_migrate
+      request :vm_execute
       request :list_datacenters
       request :get_datacenter
       request :list_clusters
@@ -59,6 +61,8 @@ module Fog
       request :get_network
       request :list_datastores
       request :get_datastore
+      request :list_compute_resources
+      request :get_compute_resource
       request :list_templates
       request :get_template
       request :get_folder
@@ -84,7 +88,6 @@ module Fog
       request :set_vm_customvalue
 
       module Shared
-
         attr_reader :vsphere_is_vcenter
         attr_reader :vsphere_rev
         attr_reader :vsphere_server
@@ -111,6 +114,10 @@ module Fog
           :corespersocket   => 'config.hardware.numCoresPerSocket',
           :overall_status => 'overallStatus',
           :guest_id => 'config.guestId',
+          :hardware_version => 'config.version',
+          :cpuHotAddEnabled => 'config.cpuHotAddEnabled',
+          :memoryHotAddEnabled => 'config.memoryHotAddEnabled',
+          :firmware => 'config.firmware',
         }
 
         def convert_vm_view_to_attr_hash(vms)
@@ -155,7 +162,6 @@ module Fog
             attrs['mac_addresses'] = Proc.new {vm_mob_ref.macs rescue nil}
             # Rescue nil to catch testing while vm_mob_ref isn't reaL??
             attrs['path'] = "/"+attrs['parent'].path.map(&:last).join('/') rescue nil
-            attrs['relative_path'] = (attrs['path'].split('/').reject {|e| e.empty?} - ["Datacenters", attrs['datacenter'], "vm"]).join("/") rescue nil
           end
         end
         # returns the parent object based on a type
@@ -186,11 +192,9 @@ module Fog
         def is_uuid?(id)
           !(id =~ /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/).nil?
         end
-
       end
 
       class Mock
-
         include Shared
 
         def self.data
@@ -308,7 +312,44 @@ module Fog
               },
               :datacenters => {
                 "Solutions" => {:name => "Solutions", :status => "grey"}
-              }
+              },
+              :clusters =>
+                [{:id => "1d4d9a3f-e4e8-4c40-b7fc-263850068fa4",
+                  :name => "Solutionscluster",
+                  :num_host => "4",
+                  :num_cpu_cores => "16",
+                  :overall_status => "green",
+                  :datacenter => "Solutions",
+                  :klass => "RbVmomi::VIM::ComputeResource"
+                 },
+                 {:id => "e4195973-102b-4096-bbd6-5429ff0b35c9",
+                  :name => "Problemscluster",
+                  :num_host => "4",
+                  :num_cpu_cores => "32",
+                  :overall_status => "green",
+                  :datacenter => "Solutions",
+                  :klass => "RbVmomi::VIM::ComputeResource"
+                 },
+                 {
+                   :klass => "RbVmomi::VIM::Folder",
+                   :clusters => [{:id => "03616b8d-b707-41fd-b3b5-The first",
+                                  :name => "Problemscluster",
+                                  :num_host => "4",
+                                  :num_cpu_cores => "32",
+                                  :overall_status => "green",
+                                  :datacenter => "Solutions",
+                                  :klass => "RbVmomi::VIM::ComputeResource"
+                                 },
+                                 {:id => "03616b8d-b707-41fd-b3b5-the Second",
+                                  :name => "Lastcluster",
+                                  :num_host => "8",
+                                  :num_cpu_cores => "32",
+                                  :overall_status => "green",
+                                  :datacenter => "Solutions",
+                                  :klass => "RbVmomi::VIM::ComputeResource"}
+                   ]
+                 }
+                ]
             }
           end
         end
@@ -333,7 +374,6 @@ module Fog
       end
 
       class Real
-
         include Shared
 
         def initialize(options={})
@@ -346,6 +386,7 @@ module Fog
           @vsphere_ns       = options[:vsphere_ns] || 'urn:vim25'
           @vsphere_rev      = options[:vsphere_rev] || '4.0'
           @vsphere_ssl      = options[:vsphere_ssl] || true
+          @vsphere_debug    = options[:vsphere_debug] || false
           @vsphere_expected_pubkey_hash = options[:vsphere_expected_pubkey_hash]
           @vsphere_must_reauthenticate = false
           @vsphere_is_vcenter = nil
@@ -387,7 +428,8 @@ module Fog
                                              :ns   => @vsphere_ns,
                                              :rev  => @vsphere_rev,
                                              :ssl  => @vsphere_ssl,
-                                             :insecure => bad_cert
+                                             :insecure => bad_cert,
+                                             :debug => @vsphere_debug
               break
             rescue OpenSSL::SSL::SSLError
               raise if bad_cert
@@ -418,9 +460,7 @@ module Fog
             raise Fog::Vsphere::Errors::SecurityError, "The remote system presented a public key with hash #{pubkey_hash} but we're expecting a hash of #{expected_pubkey_hash || '<unset>'}.  If you are sure the remote system is authentic set vsphere_expected_pubkey_hash: <the hash printed in this message> in ~/.fog"
           end
         end
-
       end
-
     end
   end
 end
