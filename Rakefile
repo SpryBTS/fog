@@ -42,6 +42,10 @@ def gem_file
   "#{name}-#{version}.gem"
 end
 
+def package_gem_file
+  "pkg/#{gem_file}"
+end
+
 def replace_header(head, header_name)
   head.sub!(/(\.#{header_name}\s*= \").*\"/) { "#{$1}#{send(header_name)}\""}
 end
@@ -54,7 +58,7 @@ end
 
 GEM_NAME = "#{name}"
 task :default => :test
-task :travis  => ['test', 'test:travis', 'test:openstack_specs']
+task :travis  => ['test', 'test:travis']
 
 Rake::TestTask.new do |t|
   t.pattern = File.join("spec", "**", "*_spec.rb")
@@ -63,14 +67,8 @@ end
 
 namespace :test do
   mock = ENV['FOG_MOCK'] || 'true'
-  task :openstack_specs do
-    sh("export FOG_MOCK=false && bundle exec rspec spec/fog/openstack/*_spec.rb")
-  end
-  task :travis => [:openstack_specs] do
+  task :travis do
       sh("export FOG_MOCK=#{mock} && bundle exec shindont")
-  end
-  task :vsphere do
-      sh("export FOG_MOCK=#{mock} && bundle exec shindont tests/vsphere")
   end
   task :openvz do
       sh("export FOG_MOCK=#{mock} && bundle exec shindont tests/openvz")
@@ -78,16 +76,18 @@ namespace :test do
   task :ovirt do
       sh("export FOG_MOCK=#{mock} && bundle exec shindont tests/ovirt")
   end
-  task :openstack do
-      sh("export FOG_MOCK=#{mock} && bundle exec shindont tests/openstack")
-  end
-  task :rackspace do
-      sh("export FOG_MOCK=#{mock} && bundle exec shindont tests/rackspace")
-  end
   task :cloudstack do
       sh("export FOG_MOCK=#{mock} && bundle exec shindont tests/cloudstack")
   end
-
+  task :vcloud_director do
+      sh("export FOG_MOCK=#{mock} && bundle exec shindont tests/vcloud_director")
+  end
+  task :vcloud_director_specs do
+    puts "Running vCloud Minitest Suite"
+    Rake::TestTask.new do |t|
+      Dir.glob('./spec/vcloud_director/**/*_spec.rb').each { |file| require file}
+    end
+  end
 end
 
 desc 'Run mocked tests for a specific provider'
@@ -160,7 +160,7 @@ namespace :release do
 
   task :prepare => :preflight do
     Rake::Task[:build].invoke
-    sh "gem install pkg/#{name}-#{version}.gem"
+    sh "gem install #{package_gem_file}"
     Rake::Task[:git_mark_release].invoke
   end
 
@@ -180,7 +180,7 @@ task :git_push_release do
 end
 
 task :gem_push do
-  sh "gem push pkg/#{name}-#{version}.gem"
+  sh "gem push #{package_gem_file}"
 end
 
 desc "Build fog-#{version}.gem"
@@ -190,6 +190,12 @@ task :build => :gemspec do
   sh "mv #{gem_file} pkg"
 end
 task :gem => :build
+
+desc "Install fog-#{version}.gem"
+task "install" do
+  Rake::Task[:build].invoke
+  sh "gem install #{package_gem_file} --no-document"
+end
 
 desc "Updates the gemspec and runs 'validate'"
 task :gemspec => :validate do

@@ -1,3 +1,371 @@
+## 1.38.0 03/28/2016
+*Hash* 5e4bde2733adc08ba2d92b2d2824e2d3845fc5e5
+
+Statistic     | Value
+------------- | --------:
+Collaborators | 2
+Downloads     | 14820336
+Forks         | 1539
+Open Issues   | 58
+Watchers      | 3805
+
+**MVP!** Daniel Aragao
+
+#### [DigitalOcean]
+*   - Failed requests fail to log because of Bluebox. thanks Daniel Lobato
+
+#### [HPCloud]
+*   Removing HP cloud. thanks JJ Asghar
+
+#### [digitalocean]
+*   fix method sig for list_images mock. thanks geemus
+*   update flavor tests to match v2 mock. thanks geemus
+
+#### [docker]
+*   Fixing bad namespace on errors. thanks David Davis
+
+#### [misc]
+*   support neutron networks labled as public. thanks Chris McClimans
+*   rfc1918 addys for private_address. thanks  Emilie
+*   merging. thanks Dan Aragao
+*   fixing bad merge. thanks Dan Aragao
+*   this doesn't seem to exist anymore. thanks Dan Aragao
+*   Task to run vcloud-director tests only. thanks Daniel Aragao
+*   Adding Syslog config elements to org network. thanks Daniel Aragao
+*   Revert "Adding Syslog config elements to org network.". thanks Daniel Aragao
+*   Adds VPN section to edge gateway service configuration. thanks Daniel Aragao
+*   Adds DHCP to edge gateway service configuration. thanks Daniel Aragao
+*   Fixes attributes when generating xml body for post deploy vapps. thanks Daniel Aragao
+*   Add post compose vapp to requests. thanks Daniel Aragao
+*   Add post compose vapp to requests. thanks Daniel Aragao
+*   The AdminPassword XML element isn't present unless AdminPasswordEnabled, maybe because it's an empty tag? If not set the VCloud API gives a 400. thanks Daniel Aragao
+*   WIP - Complying with VCloud Director's xml and pulling it into its own class with tests. thanks Daniel Aragao
+*   AllEULAsAccepted has to be in the right 'place', adding VM name and escape customisation scripts. thanks Daniel Aragao
+*   Once more, order matters. thanks Daniel Aragao
+*   WIP - Complying with VCloud Director's xml and pulling it into its own class with tests. thanks Daniel Aragao
+*   AllEULAsAccepted has to be in the right 'place', adding VM name and escape customisation scripts. thanks Daniel Aragao
+*   Once more, order matters. thanks Daniel Aragao
+*   The AdminPassword XML element isn't present unless AdminPasswordEnabled, maybe because it's an empty tag? If not set the VCloud API gives a 400. thanks Daniel Aragao
+*   Adding network_adapters to VM parser and model as a single IP address doesn't cut when dealing with multiple networks. thanks Daniel Aragao
+*   Adding network_adapters to VM parser and model as a single IP address doesn't cut when dealing with multiple networks. thanks Daniel Aragao
+*   DRYer refactored version. thanks Daniel Aragao
+*   Adding network_adapters to VM parser and model as a single IP address doesn't cut when dealing with multiple networks. thanks Daniel Aragao
+*   DRYer refactored version. thanks Daniel Aragao
+*   I need the network name too. thanks Daniel Aragao
+*   I need the network name too. thanks Daniel Aragao
+*   Fix from closed PR #2967. thanks Daniel Aragao
+*   Changed my mind on this one and closed off PR #2967. thanks Daniel Aragao
+*   WIP - Adding post recompose vapp. Hacky for now. thanks Daniel Aragao
+*   Better to pass the VM model instead of a random hash. thanks Daniel Aragao
+*   Power off leaves it in 'Partially Running' state. VMs must be fully OFF when deleting them with recompose. thanks Daniel Aragao
+*   InstantiationParams and SourceItems are only needed when actually adding VMs. thanks Daniel Aragao
+*   Easier to read. thanks Daniel Aragao
+*   Adding 'deployed' status to model so that one can decide whether to undeploy. thanks Daniel Aragao
+*   Revert "Fix from closed PR #2967". thanks Daniel Aragao
+*   Refactoring to remove duplication from compose and recompose generators. thanks Daniel Aragao
+*   Wrong merge. thanks Daniel Aragao
+*   Ignoring this for now. thanks Daniel Aragao
+*   Housekeeping. thanks Daniel Aragao
+*   WIP - Adding post recompose vapp. Hacky for now. thanks Daniel Aragao
+*   Better to pass the VM model instead of a random hash. thanks Daniel Aragao
+*   Power off leaves it in 'Partially Running' state. VMs must be fully OFF when deleting them with recompose. thanks Daniel Aragao
+*   InstantiationParams and SourceItems are only needed when actually adding VMs. thanks Daniel Aragao
+*   Easier to read. thanks Daniel Aragao
+*   Adding 'deployed' status to VM model. thanks Daniel Aragao
+*   Housekeeping. thanks Daniel Aragao
+*   Refactoring to remove duplication from compose and recompose generators. thanks Daniel Aragao
+*   Don't try to build it if it doesn't exist. thanks Daniel Aragao
+*   Oops. thanks Daniel Aragao
+*   Adding missing tags for NetworkConnection. thanks Daniel Aragao
+*   Adding missing tags for NetworkConnection. thanks Daniel Aragao
+*   Adding tests for vm and vms parsers. These represent the XML crunching from GET requests in compute. thanks Daniel Aragao
+*   Adding tests for vm and vms parsers. These represent the XML crunching from GET requests in compute. thanks Daniel Aragao
+*   Adding 'deployed' status to model so that one can decide whether to undeploy. thanks Daniel Aragao
+*   For the old versions of Ruby. thanks Daniel Aragao
+*   For the old versions of Ruby. thanks Daniel Aragao
+*   Fixing dependency in Travis. thanks Daniel Aragao
+*   Fixing dependency in Travis. thanks Daniel Aragao
+*   Adding network_adapters to VM parser and model as a single IP address doesn't cut when dealing with multiple networks. thanks Daniel Aragao
+*   DRYer refactored version. thanks Daniel Aragao
+*   I need the network name too. thanks Daniel Aragao
+*   Revert "Fix from closed PR #2967". thanks Daniel Aragao
+*   Adding tests for vm and vms parsers. These represent the XML crunching from GET requests in compute. thanks Daniel Aragao
+*   Adding 'deployed' status to model so that one can decide whether to undeploy. thanks Daniel Aragao
+*   For the old versions of Ruby. thanks Daniel Aragao
+*   Fixing dependency in Travis. thanks Daniel Aragao
+*   Task to run vcloud-director tests only. thanks Daniel Aragao
+*   Adding Syslog config elements to org network. thanks Daniel Aragao
+*   Revert "Adding Syslog config elements to org network.". thanks Daniel Aragao
+*   Adds VPN section to edge gateway service configuration. thanks Daniel Aragao
+*   Adding network_adapters to VM parser and model as a single IP address doesn't cut when dealing with multiple networks. thanks Daniel Aragao
+*   Adding network_adapters to VM parser and model as a single IP address doesn't cut when dealing with multiple networks. thanks Daniel Aragao
+*   DRYer refactored version. thanks Daniel Aragao
+*   Adding network_adapters to VM parser and model as a single IP address doesn't cut when dealing with multiple networks. thanks Daniel Aragao
+*   DRYer refactored version. thanks Daniel Aragao
+*   I need the network name too. thanks Daniel Aragao
+*   Changed my mind on this one and closed off PR #2967. thanks Daniel Aragao
+*   Adding 'deployed' status to model so that one can decide whether to undeploy. thanks Daniel Aragao
+*   Wrong merge. thanks Daniel Aragao
+*   Don't try to build it if it doesn't exist. thanks Daniel Aragao
+*   Oops. thanks Daniel Aragao
+*   Adding tests for vm and vms parsers. These represent the XML crunching from GET requests in compute. thanks Daniel Aragao
+*   For the old versions of Ruby. thanks Daniel Aragao
+*   Fixing dependency in Travis. thanks Daniel Aragao
+*   Adding network_adapters to VM parser and model as a single IP address doesn't cut when dealing with multiple networks. thanks Daniel Aragao
+*   DRYer refactored version. thanks Daniel Aragao
+*   Adding tests for vm and vms parsers. These represent the XML crunching from GET requests in compute. thanks Daniel Aragao
+*   For the old versions of Ruby. thanks Daniel Aragao
+*   Standardize the `:state` alias to `:status`. thanks JJ Asghar
+*   Keeping the dependency gems in order. thanks JJ Asghar
+*   Move Rackspace out to provider gem. thanks Matt Darby
+*   Removed bulk of OpenStack. thanks Matt Darby
+*   openstack service retrieval also pass options on unscoped fallback. thanks Maurice Schreiber
+*   openstack image v2 correct images find_by_* and find_attribute. thanks Maurice Schreiber
+*   Removes URI::encode call on parameteres. thanks Petr Blaho
+*   Added filtering capabilities to images request. thanks Raul Roa
+*   Added filtering capabilities to servers request. thanks Raul Roa
+*   Added filtering capabilities to regions request. thanks Raul Roa
+*   Adding myself to the contributors list. thanks Raul Roa
+*   Added missing argument for regions request. thanks Raul Roa
+*   Updated list_regions signature at Mock. thanks Raul Roa
+*   Updated list_servers signature at Mock. thanks Raul Roa
+*   Put the prefix in place for all identity calls. thanks Sean Handley
+*   Include endpoint path matcher. thanks Sean Handley
+*   Deperate delete_server for destroy_server. thanks Suraj Shirvankar
+*   Added rake task to install the gem locally. thanks Suraj Shirvankar
+*   Added the cloudatcost as a gem. thanks Suraj Shirvankar
+*   Delete stuff. thanks Suraj Shirvankar
+*   Update README.md. thanks Suraj Shirvankar
+*   Remove more hp remains. thanks Suraj Shirvankar
+*   Added paging for images collection. thanks Suraj Shirvankar
+*   Removed debug code. thanks Suraj Shirvankar
+*   Change method from dig to deep fetch. thanks Suraj Shirvankar
+*   Add get_server_password functionality. thanks Tareq
+*   Strip port number from host header. thanks Tim Lawrence
+*   Added label to Guest Properties. thanks Tim Lawrence
+*   require builder. thanks Tim Lawrence
+*   Added instantiate_vapp_template_params generator. thanks Tim Lawrence
+*   Tidying up for PR. thanks Tim Lawrence
+*   Tidying up for PR. thanks Tim Lawrence
+*   Tidying up for PR. thanks Tim Lawrence
+*   pin mime-types version. thanks Tim Lawrence
+*   add spec helper with creds. thanks Tim Lawrence
+*   fix tests. thanks Tim Lawrence
+*   Revert "[digitalocean] update flavor tests to match v2 mock". thanks geemus
+*   cleanup some HP remnants. thanks geemus
+*   remove old test running stuff for extracted providers. thanks geemus
+*   rework mock openstack snapshot to have same behavior as servers... thanks zhitongLBN
+*   use symbol to fix get options erreur. thanks zhitongLBN
+*   added associate and disassociate into floating_ip objet     make mock requests concern floating_ips to have same behaviors as     compute's. thanks zhitongLIU
+
+#### [openstack]
+*   storage does not require api_key and username, token can also be used. thanks Andreas Pfau
+
+#### [skip ci]
+*   Fix some typos in the README. thanks Tim Wade
+
+#### [vcloud director]
+*   access vApp Template Virtual Machines from Catalog Items. thanks Tim Lawrence
+
+#### [vcloud_director]
+*   fix typo for port omission. thanks Wesley Beary
+
+
+## 1.37.0 12/22/2015
+*Hash* f7cf6b7c6499ab2a58bb7fe6848363d7cc459d3a
+
+Statistic     | Value
+------------- | --------:
+Collaborators | 2
+Downloads     | 13380838
+Forks         | 1530
+Open Issues   | 89
+Watchers      | 3729
+
+**MVP!** Rich Daley
+
+#### [misc]
+*   Remove vSphere provider. thanks  Garcia
+*   Remove lib/fog/bin/vsphere. thanks  Garcia
+*   Use fog-vsphere ~> 0.2. thanks  Garcia
+*   OpenStack fix Cinder v2 typo. thanks Ladislav Smola
+*   OpenStack add server evacuate action. thanks Ladislav Smola
+*   Fix DigitalOceanV2::SshKey misplaced #save, #destroy and #update methods. thanks Manuel Franco
+*   Enforce no slash in container name. thanks Matt Darby
+*   Update API path for deleting SSH keys. thanks Michael Borohovski
+*   Upgrade version of fog-vsphere to 0.4. Fixes #3784. thanks Michael Borohovski
+*   Updates Getting Started for DigitalOcean. thanks Peter Souter
+*   Add some mocks for VM (partial) and Network. thanks Rich Daley
+*   Add loads more mocks to the vcloud_director backend. thanks Rich Daley
+*   Add mocks for disks. thanks Rich Daley
+*   Add mock support for tags. thanks Rich Daley
+*   Don't pass AdminPassword if AdminPasswordAuto is true (causes an exception). thanks Rich Daley
+*   Remove erroneous file. thanks Rich Daley
+*   Add a barebones :post_reconfigure_vm and a Vm#reconfigure that uses it. thanks Rich Daley
+*   Add a mock and fix infinite loop issue. thanks Rich Daley
+*   Set description in the mocks ahead of separate PR. thanks Rich Daley
+*   Add support for VM descriptions. thanks Rich Daley
+*   Add a #storage_only to disks to return only those disks that are actually disks. thanks Rich Daley
+*   Remove description if it hasn't changed. thanks Rich Daley
+*   Make comment more explicit about OVF. thanks Rich Daley
+*   Add vdc.networks. thanks Rich Daley
+*   Fix bogus requires. thanks Rich Daley
+*   Add a mock for put_network_connection_system_section_vapp and fix the mock for get_vm_network to get the VM ID the same way the parser does. thanks Rich Daley
+*   Add mock for post_power_on_vapp. thanks Rich Daley
+*   Add mock for delete_vapp. thanks Rich Daley
+*   According to doc, only the username is mandatory. thanks Sean Handley
+*   If the management URL has no path, use the one in the auth URI. thanks Sean Handley
+*   Revert "If the management URL has no path, use the one in the auth URI.". thanks Sean Handley
+*   Workaround for installs using both v2 and v3. thanks Sean Handley
+*   Fix #3785 Missing image details for digitalocean version 2 api. thanks Suraj Shirvankar
+*   Added method locked? to check if the machine is currently locked with     another operation. thanks Suraj Shirvankar
+*   Add openstack_temp_url_key to the list of recognized options. thanks Yauheni Kryudziuk
+*   rely on fog-xml nokogiri dep. thanks geemus
+*   add mime-types as dev dependency. thanks geemus
+*   Update compute.md. thanks losingle
+
+#### [openstack]
+*   volume API v2 implementation. thanks Darren Hague
+*   Revert over-eager optimisation in v2 authentication case. thanks Darren Hague
+
+#### [rackspace]
+*   Add support for get_vnc_console request to compute_v2. thanks Dusty Jones
+
+
+## 1.36.0 11/16/2015
+*Hash* e7cd19696284633d4363993e2e3fda41384b7d58
+
+Statistic     | Value
+------------- | --------:
+Collaborators | 2
+Downloads     | 12793379
+Forks         | 1517
+Open Issues   | 92
+Watchers      | 3689
+
+**MVP!** Phil Ross
+
+#### [misc]
+*   added content-encoding meta-data. thanks ller
+*   version for fog-aliyun added in fog.gemspec. thanks Daniyal Shah
+*   Digital Ocean V2 call to create an ssh key returns a 201 on success: https://developers.digitalocean.com/documentation/v2/#create-a-new-key. thanks Dave Benvenuti
+*   improve mocks to more closely match real ssh key endpoint functionality. thanks Dave Benvenuti
+*   Fix issue when creating virtual machines with more than 7 disks. thanks Francois Herbert
+*   Fix distributed port group switches support for cloning with multiple networks. thanks as
+*   Extract virtualswitch parameter to the network model. thanks as
+*   fix openstack baremetal node delete. thanks Jason Montleon
+*   Fixed issue with OpenStack Auth v2. thanks ller
+*   Fix set node type for Rackspace load balancer. thanks Pablo Porto
+*   Add abbr attribute to Linode DataCenter. thanks Phil Ross
+*   Add created_at and requires_pvops_kernel to Linode Image model. thanks Phil Ross
+*   Update the Linode avail_kernels request and Kernel model. thanks Phil Ross
+*   Update the Linode avail_linodeplans request and Flavor model. thanks Phil Ross
+*   Add support for the Linode avail.nodebalancers API call. thanks Phil Ross
+*   Fix the signature of the Linode avail_stackscripts mock. thanks Phil Ross
+*   Use options on the all method to filter Linode kernels. thanks Phil Ross
+*   fix method call name in openstack node destroy so that it will work. thanks Stephen Herr
+*   vsphere: allow setting of boot order when using api > 5.0. thanks Timo Goebel
+*   Revert "temporarily relax ruby version constraint". thanks geemus
+*   make net/ssh require optional. thanks geemus
+*   re-add 1.9 to travis config. thanks geemus
+*   limit to 1.9 compat fog-google. thanks geemus
+*   1.8 compatibility for pre 2 release. thanks geemus
+
+#### [openstack]
+*   Basic caching support for auth tokens, domains & projects. thanks Darren Hague
+*   Re-record VCRs, plus some light refactoring. thanks Darren Hague
+
+#### [vsphere]
+*   add support for taking snapshot. thanks Ivo Reznicek
+*   support for snapshot list and revert. thanks Ivo Reznicek
+*   support for listing processes in guest OS. thanks Ivo Reznicek
+*   Prefer Class#name to Class#to_s. thanks Kevin Menard
+
+
+## 1.35.0 10/20/2015
+*Hash* 4444f3287454a4281ead73fa24aa1b93d5d23a39
+
+Statistic     | Value
+------------- | --------:
+Collaborators | 2
+Downloads     | 12346569
+Forks         | 1496
+Open Issues   | 86
+Watchers      | 3665
+
+**MVP!** bryanl
+
+#### [#3099]
+*   Remove Nokogiri constraint. thanks Paul Thornthwaite
+
+#### [Fog 2.0]
+*   Remove 1.8.7 support. thanks Paul Thornthwaite
+*   Update docs re dropping 1.8.7 support. thanks Paul Thornthwaite
+
+#### [misc]
+*   Add boot_volume_size to RS compute_v2 Server Create. thanks Alain De Carolis
+*   fix kernel selection bug. thanks Alex Borisov
+*   Use head version of all released MRI versions. thanks Caleb Thompson
+*   Allow travis to generate matrix of rubies and gems. thanks Caleb Thompson
+*   Re-add 1.9.3 support. thanks Caleb Thompson
+*   Allow failures on latest Ruby version. thanks Caleb Thompson
+*   change get_raw replacement regex from />/ to /=>/ for output XML. thanks Cherdancev Evgeni
+*   add RAW tests. thanks Cherdancev Evgeni
+*   fixing scope of mock class on compute_v2 digital ocean list fiels. thanks Joshua Gross
+*   Fixing misnaming of methods for mock classes in compute v2 digitalocean. thanks Joshua Gross
+*   Making the existing suite of tests pass for digitalocean compute v2. thanks Joshua Gross
+*   fixing digitalocean server tests to test response format. thanks Joshua Gross
+*   fixing merge conflicts. thanks Joshua Gross
+*   forgetful save of a file. thanks Joshua Gross
+*   Openstack adding Heat Patch support. thanks Ladislav Smola
+*   Openstack volumes adding volume type management. thanks Ladislav Smola
+*   Ensure root user behaves like Rackspace defaults. thanks Martin Smith
+*   Require fog-google versions compatable w/ > 1.9.3. thanks Nat Welch
+*   update fog-google dep to > 0.1.1. thanks Nat Welch
+*   Added case to reboot gracefully if toolsOld. thanks Nick Huanca
+*   Change URL options to a hash rather than an array. thanks Paul Martin
+*   CGI.escape and character replacements. thanks Paul Martin
+*   Limit 1.9.3 tests to use older Net::SSH. thanks Paul Thornthwaite
+*   Remove support for Ruby 1.9.3. thanks Paul Thornthwaite
+*   Don't allow Travis failures for Ruby 2.2. thanks Paul Thornthwaite
+*   Removed unecessary configurations from Travis. thanks Paulo Henrique Lopes Ribeiro
+*   Bumped required ruby version to 1.9.3. thanks Paulo Henrique Lopes Ribeiro
+*   Remove XENSERVER code. thanks Paulo Henrique Lopes Ribeiro
+*   Remove XENSERVER tests. thanks Paulo Henrique Lopes Ribeiro
+*   Remove XENSERVER bin. thanks Paulo Henrique Lopes Ribeiro
+*   Remove XENSERVER test helper. thanks Paulo Henrique Lopes Ribeiro
+*   Depend on fog-xenserver. thanks Paulo Henrique Lopes Ribeiro
+*   Adds documentation for new V2 methods. thanks Peter Souter
+*   Add new #get method for images. thanks Peter Souter
+*   Adds #transfer and #convert methods to image. thanks Peter Souter
+*   list_servers. thanks bryanl
+*   list_images. thanks bryanl
+*   list_regions. thanks bryanl
+*   list_flavors. thanks bryanl
+*   add a server mock. thanks bryanl
+*   list_servers. thanks bryanl
+*   list_images. thanks bryanl
+*   list_regions. thanks bryanl
+*   list_flavors. thanks bryanl
+*   add a server mock. thanks bryanl
+*   add create and delete server. thanks bryanl
+*   get a server. thanks bryanl
+*   add droplet actions. thanks bryanl
+*   add ssh key data. thanks bryanl
+*   support DigitalOcean v2 compute API. thanks bryanl
+*   add methods for server ipv4 and ipv6 public addresses. thanks bryanl
+*   Fog support new provider: aliyun. thanks dengqinsi
+*   v2.0.0.pre.0. thanks geemus
+*   temporarily relax ruby version constraint. thanks geemus
+
+#### [openstack]
+*   Add request for Cinder to get quota usage. thanks Dang Tung Lam
+*   List server actions fix. thanks Dang Tung Lam
+*   Glance v2 API. thanks Darren Hague
+*   Make sure that Identity v3 authentication uses a v3 endpoint. thanks Darren Hague
+*   IdV3: re-record VCRs against a new DevStack kilo installation. thanks Darren Hague
+
+
 ## 1.34.0 09/03/2015
 *Hash* 23467f391cbc9d8d3262da33cec533f8b8e80cee
 

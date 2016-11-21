@@ -9,8 +9,8 @@ rvm:
   - 2.0
   - 2.1
   - 2.2
-  - jruby-19mode
   - jruby-head
+  - jruby-19mode
 
 gemfile:
   - Gemfile
@@ -20,7 +20,6 @@ matrix:
   fast_finish: true
   allow_failures:
     - rvm: jruby-head
-    - rvm: 2.2
 
 notifications:
   email: false

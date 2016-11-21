@@ -6,11 +6,23 @@ fog is the Ruby cloud services library, top to bottom:
 * Requests allow power users to get the most out of the features of each individual cloud.
 * Mocks make testing and integrating a breeze.
 
-[![Build Status](https://secure.travis-ci.org/fog/fog.png?branch=master)](http://travis-ci.org/fog/fog)
-[![Dependency Status](https://gemnasium.com/fog/fog.png)](https://gemnasium.com/fog/fog)
-[![Code Climate](https://codeclimate.com/github/fog/fog.png)](https://codeclimate.com/github/fog/fog)
-[![Gem Version](https://fury-badge.herokuapp.com/rb/fog.png)](http://badge.fury.io/rb/fog)
-[![Gittip](http://img.shields.io/gittip/geemus.png)](https://www.gittip.com/geemus/)
+[![Build Status](https://secure.travis-ci.org/fog/fog.svg?branch=master)](http://travis-ci.org/fog/fog)
+[![Dependency Status](https://gemnasium.com/fog/fog.svg)](https://gemnasium.com/fog/fog)
+[![Code Climate](https://codeclimate.com/github/fog/fog/badges/gpa.svg)](https://codeclimate.com/github/fog/fog)
+[![Gem Version](https://badge.fury.io/rb/fog.svg)](http://badge.fury.io/rb/fog)
+
+## Dependency Notice
+
+Currently all fog providers are getting separated into metagems to lower the
+load time and dependency count.
+
+If there's a metagem available for your cloud provider, e.g. `fog-aws`,
+you should be using it instead of requiring the full fog collection to avoid 
+unnecessary dependencies.
+
+'fog' should be required explicitly only if:  
+- The provider you use doesn't yet have a metagem available.
+- You require Ruby 1.9.3 support.
 
 ## Getting Started
 
@@ -38,10 +50,10 @@ true
 
 ## Ruby version
 
-Fog requires Ruby `1.9.3` or later.
+Fog requires Ruby `2.0.0` or later.
 
-Ruby `1.8.7` and `1.9.2` support was dropped in `fog-v2.0.0` as a backwards incompatible
-change. Please use the later fog `1.x` versions if you require `1.8.7` or `1.9.2` support.
+Ruby `1.8` and `1.9` support was dropped in `fog-v2.0.0` as a backwards incompatible
+change. Please use the later fog `1.x` versions if you require `1.8.7` or `1.9.x` support.
 
 ## Collections
 
@@ -62,7 +74,7 @@ Collections share basic CRUD type operations, such as:
 
 * `all` - fetch every object of that type from the provider.
 * `create` - initialize a new record locally and a remote resource with the provider.
-* `get` - fetch a single object by it's identity from the provider.
+* `get` - fetch a single object by its identity from the provider.
 * `new` - initialize a new record locally, but do not create a remote resource with the provider.
 
 As an example, we'll try initializing and persisting a Rackspace Cloud server:
@@ -95,9 +107,9 @@ Many of the collection methods return individual objects, which also provide com
 
 ## Mocks
 
-As you might imagine, testing code using Fog can be slow and expensive, constantly turning on and and shutting down instances.
-Mocking allows skipping this overhead by providing an in memory representation resources as you make requests.
-Enabling mocking easy to use, before you run other commands, simply run:
+As you might imagine, testing code using Fog can be slow and expensive, constantly turning on and shutting down instances.
+Mocking allows skipping this overhead by providing an in memory representation of resources as you make requests.
+Enabling mocking is easy to use: before you run other commands, simply run:
 
 ```ruby
 Fog.mock!

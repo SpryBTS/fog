@@ -1,13 +1,11 @@
 require 'fog/joyent/core'
 require 'fog/joyent/errors'
-require 'net/ssh'
 
 module Fog
   module Compute
     class Joyent < Fog::Service
       requires :joyent_username
 
-      recognizes :joyent_password
       recognizes :joyent_url
 
       recognizes :joyent_keyname
@@ -16,7 +14,7 @@ module Fog
       recognizes :joyent_keyphrase
       recognizes :joyent_version
 
-      secrets :joyent_password, :joyent_keydata, :joyent_keyphrase
+      secrets :joyent_keydata, :joyent_keyphrase
 
       model_path 'fog/joyent/models/compute'
       request_path 'fog/joyent/requests/compute'
@@ -101,7 +99,6 @@ module Fog
 
         def initialize(options = {})
           @joyent_username = options[:joyent_username]
-          @joyent_password = options[:joyent_password]
         end
 
         def request(opts)
@@ -118,7 +115,7 @@ module Fog
           @persistent = options[:persistent] || false
 
           @joyent_url = options[:joyent_url] || 'https://us-sw-1.api.joyentcloud.com'
-          @joyent_version = options[:joyent_version] || '~6.5'
+          @joyent_version = options[:joyent_version] || '~7'
           @joyent_username = options[:joyent_username]
 
           unless @joyent_username
@@ -126,13 +123,18 @@ module Fog
           end
 
           if options[:joyent_keyname]
+            begin
+              require "net/ssh"
+            rescue LoadError
+              Fog::Logger.warning("'net/ssh' missing, please install and try again.")
+              exit(1)
+            end
             @joyent_keyname = options[:joyent_keyname]
             @joyent_keyphrase = options[:joyent_keyphrase]
             @key_manager = Net::SSH::Authentication::KeyManager.new(nil, {
                 :keys_only => true,
                 :passphrase => @joyent_keyphrase
             })
-            @header_method = method(:header_for_signature_auth)
 
             if options[:joyent_keyfile]
               if File.exist?(options[:joyent_keyfile])
@@ -149,11 +151,8 @@ module Fog
                 @key_manager.add_key_data(@joyent_keydata)
               end
             end
-          elsif options[:joyent_password]
-            @joyent_password = options[:joyent_password]
-            @header_method = method(:header_for_basic_auth)
           else
-            raise ArgumentError, "Must provide either a joyent_password or joyent_keyname and joyent_keyfile pair"
+            raise ArgumentError, "Must provide a joyent_keyname and joyent_keyfile pair"
           end
 
           @connection = Fog::XML::Connection.new(
@@ -168,7 +167,7 @@ module Fog
             "X-Api-Version" => @joyent_version,
             "Content-Type" => "application/json",
             "Accept" => "application/json"
-          }.merge(opts[:headers] || {}).merge(@header_method.call)
+          }.merge(opts[:headers] || {}).merge(header_for_signature_auth)
 
           if opts[:body]
             opts[:body] = Fog::JSON.encode(opts[:body])
@@ -192,12 +191,6 @@ module Fog
         def json_decode(body)
           parsed = Fog::JSON.decode(body)
           decode_time_attrs(parsed)
-        end
-
-        def header_for_basic_auth
-          {
-            "Authorization" => "Basic #{Base64.encode64("#{@joyent_username}:#{@joyent_password}").delete("\r\n")}"
-          }
         end
 
         def header_for_signature_auth

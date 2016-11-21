@@ -11,8 +11,8 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name              = "fog"
-  s.version           = "2.0.0-alpha"
-  s.date              = "2015-09-03"
+  s.version           = "1.38.0"
+  s.date              = "2016-08-03"
   s.rubyforge_project = "fog"
 
   ## Make sure your summary is short. The description may be as long
@@ -44,26 +44,28 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.extra_rdoc_files = %w[README.md]
 
-  ## Ruby version
-  s.required_ruby_version = ">= 1.9.3"
-
-  s.add_dependency("fog-core", "~> 1.32")
+  s.add_dependency("fog-core", "~> 1.43")
   s.add_dependency("fog-json")
   s.add_dependency("fog-xml", "~> 0.1.1")
-
+  
+  # JSON locked for Ruby 1.9, remove once deprecated
+  s.add_dependency("json", ">= 1.8", "< 2.0")
   s.add_dependency("ipaddress", "~> 0.5")
-  s.add_dependency("nokogiri")
 
   # Modular providers (please keep sorted)
+  s.add_dependency("fog-aliyun",">= 0.1.0")
   s.add_dependency("fog-atmos")
   s.add_dependency("fog-aws", ">= 0.6.0")
   s.add_dependency("fog-brightbox", "~> 0.4")
+  s.add_dependency("fog-cloudatcost", "~> 0.1.0")
   s.add_dependency("fog-dynect", "~> 0.0.2")
   s.add_dependency("fog-ecloud", "~> 0.1")
-  s.add_dependency("fog-google", ">= 0.0.2")
+  s.add_dependency("fog-google", "<= 0.1.0")
   s.add_dependency("fog-local")
+  s.add_dependency("fog-openstack")
   s.add_dependency("fog-powerdns", ">= 0.1.1")
   s.add_dependency("fog-profitbricks")
+  s.add_dependency("fog-rackspace")
   s.add_dependency("fog-radosgw", ">= 0.0.2")
   s.add_dependency("fog-riakcs")
   s.add_dependency("fog-sakuracloud", ">= 0.0.4")
@@ -73,10 +75,13 @@ Gem::Specification.new do |s|
   s.add_dependency("fog-terremark")
   s.add_dependency("fog-vmfusion")
   s.add_dependency("fog-voxel")
+  s.add_dependency("fog-vsphere", ">= 0.4.0")
   s.add_dependency("fog-xenserver")
+  s.add_dependency("fog-digitalocean")
 
   s.add_development_dependency("docker-api", ">= 1.13.6")
   s.add_development_dependency("fission")
+  s.add_development_dependency("mime-types", "<=2.99.1")
   s.add_development_dependency("minitest")
   s.add_development_dependency("minitest-stub-const")
   s.add_development_dependency("opennebula")
@@ -84,7 +89,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency("rake")
   s.add_development_dependency("rbovirt", "0.0.32")
   s.add_development_dependency("rbvmomi")
-  s.add_development_dependency("rubocop") if RUBY_VERSION > "1.9"
+  s.add_development_dependency("rubocop")
   s.add_development_dependency("shindo", "~> 0.3.4")
   s.add_development_dependency("simplecov")
   s.add_development_dependency("thor")
@@ -92,8 +97,25 @@ Gem::Specification.new do |s|
   s.add_development_dependency("rspec-core")
   s.add_development_dependency("rspec-expectations")
   s.add_development_dependency("vcr")
-  s.add_development_dependency("webmock")
+  s.add_development_dependency("webmock","~>1.22.2")
 
   s.files = `git ls-files`.split("\n")
   s.test_files = `git ls-files -- {spec,tests}/*`.split("\n")
+
+  postinstall_message =  <<-POSTINST
+------------------------------
+Thank you for installing fog!
+
+IMPORTANT NOTICE:
+If there's a metagem available for your cloud provider, e.g. `fog-aws`,
+you should be using it instead of requiring the full fog collection to avoid
+unnecessary dependencies.
+
+'fog' should be required explicitly only if:
+- The provider you use doesn't yet have a metagem available.
+- You require Ruby 1.9.3 support.
+------------------------------
+  POSTINST
+
+  s.post_install_message = postinstall_message
 end

@@ -13,7 +13,7 @@ module Fog
 
           xml = ::OpenNebula::VirtualMachine.build_xml
           vm  = ::OpenNebula::VirtualMachine.new(xml, client)
-          rc = vm.allocate(attr[:flavor].to_s + "\nNAME=" + attr[:name])
+          rc = vm.allocate(attr[:flavor].to_s + "\nNAME=\"" + attr[:name] + "\"") 
 
           # irb(main):050:0> vm.allocate(s.flavor.to_s + "\nNAME=altest5")
           # => #<OpenNebula::Error:0x00000002a50760 @message="[VirtualMachineAllocate] User [42] : Not authorized to perform CREATE VM.", @errno=512>
@@ -68,21 +68,30 @@ module Fog
 
       class Mock
         def vm_allocate(attr={ })
+          response = Excon::Response.new
+          response.status = 200
+
+          id = rand(1000)
+          ids = []
+
+          self.data['vms'].each do |vm|
+            ids << vm['id']
+            if vm['id'] == id
+              while ids.include?(id)
+                id = rand(1000)
+              end
+              break
+            end
+          end
+
           data = {}
-          data["onevm_object"] = ""
-          data["status"] = "Running"
-          data["state"]  = "3"
-          data["id"]     = 4
-          data["uuid"]   = "5"
-          data["gid"]    = "5"
-          data["name"]   = "MockVM"
-          data["user"]   = "MockUser" 
-          data["group"]  = "MockGroup"
-          data["cpu"]    = "2"
-          data["memory"] = "1024"
-          data["mac"]	 = "00:01:02:03:04:05"
-          data["ip"]	 = "1.1.1.1"
-          data
+          data['id'] = id
+					data['flavor'] = attr[:flavor]
+					data['name'] = attr[:name]
+          data['state'] = 'RUNNING'
+          data['status'] = 3
+          self.data['vms'] << data
+					data
         end
       end
     end
